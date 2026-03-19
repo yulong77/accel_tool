@@ -1,0 +1,112 @@
+[23:33:56] [INFO ] AccelTool started.
+[23:33:56] [INFO ] Opening CSV file: accel_data.csv
+[23:33:58] [ERROR] STD ERROR: Failed to ping wireless node. Check power, range, frequency, LXRS/LXRS+, and node address.
+[23:41:06] [INFO ] AccelTool started.
+[23:41:06] [INFO ] Using port: COM3
+[23:41:06] [INFO ] Using node address: 56384
+[23:41:06] [INFO ] Opening CSV file: accel_data.csv
+[23:41:11] [ERROR] MSCL ERROR: Invalid Com Port.
+[21:20:19] [INFO ] AccelTool started.
+[21:20:19] [INFO ] Using port: COM3
+[21:20:19] [INFO ] Using node address: 56384
+[21:20:19] [INFO ] Opening CSV file: accel_data.csv
+[21:20:19] [ERROR] MSCL ERROR: Invalid Com Port.
+[21:20:41] [INFO ] AccelTool started.
+[21:20:41] [INFO ] Using port: COM3
+[21:20:41] [INFO ] Using node address: 56384
+[21:20:41] [INFO ] Opening CSV file: accel_data.csv
+[21:26:12] [INFO ] AccelTool started.
+[21:26:12] [INFO ] Using port: COM3
+[21:26:12] [INFO ] Using node address: 56384
+[21:26:12] [INFO ] Opening CSV file: accel_data.csv
+[21:26:13] [ERROR] STD ERROR: Failed to ping wireless node. Check power, range, frequency, LXRS/LXRS+, and node address.
+[22:55:12] [INFO ] AccelTool started.
+[22:55:12] [INFO ] Loaded config file: config/acceltool.ini
+[22:55:12] [INFO ] Using port: COM3
+[22:55:12] [INFO ] Using node address: 56384
+[22:55:12] [INFO ] Using baudrate: 3000000
+[22:55:12] [INFO ] Using sample rate: 1024
+[22:55:12] [INFO ] Opening CSV file: accel_data.csv
+[22:55:17] [ERROR] STD ERROR: Failed to ping wireless node. Check power, range, frequency, LXRS/LXRS+, and node address.
+[22:55:19] [INFO ] AccelTool started.
+[22:55:19] [INFO ] Loaded config file: config/acceltool.ini
+[22:55:19] [INFO ] Using port: COM3
+[22:55:19] [INFO ] Using node address: 56384
+[22:55:19] [INFO ] Using baudrate: 3000000
+[22:55:19] [INFO ] Using sample rate: 1024
+[22:55:19] [INFO ] Opening CSV file: accel_data.csv
+[22:56:56] [INFO ] AccelTool started.
+[22:56:56] [INFO ] Loaded config file: config/acceltool.ini
+[22:56:56] [INFO ] Using port: COM3
+[22:56:56] [INFO ] Using node address: 56384
+[22:56:56] [INFO ] Using baudrate: 3000000
+[22:56:56] [INFO ] Using sample rate: 2048
+[22:56:56] [INFO ] Opening CSV file: accel_data.csv
+[22:56:58] [ERROR] STD ERROR: Failed to ping wireless node. Check power, range, frequency, LXRS/LXRS+, and node address.
+[22:57:03] [INFO ] AccelTool started.
+[22:57:03] [INFO ] Loaded config file: config/acceltool.ini
+[22:57:03] [INFO ] Using port: COM3
+[22:57:03] [INFO ] Using node address: 56384
+[22:57:03] [INFO ] Using baudrate: 3000000
+[22:57:03] [INFO ] Using sample rate: 2048
+[22:57:03] [INFO ] Opening CSV file: accel_data.csv
+[22:59:08] [INFO ] AccelTool started.
+[22:59:08] [INFO ] Loaded config file: config/acceltool.ini
+[22:59:08] [INFO ] Using port: COM3
+[22:59:08] [INFO ] Using node address: 56384
+[22:59:08] [INFO ] Using baudrate: 3000000
+[22:59:08] [INFO ] Using sample rate: 2048
+[22:59:08] [INFO ] Opening CSV file: accel_data.csv
+[22:59:10] [ERROR] STD ERROR: Failed to ping wireless node. Check power, range, frequency, LXRS/LXRS+, and node address.
+[22:59:13] [INFO ] AccelTool started.
+[22:59:13] [INFO ] Loaded config file: config/acceltool.ini
+[22:59:13] [INFO ] Using port: COM3
+[22:59:13] [INFO ] Using node address: 56384
+[22:59:13] [INFO ] Using baudrate: 3000000
+[22:59:13] [INFO ] Using sample rate: 2048
+[22:59:13] [INFO ] Opening CSV file: accel_data.csv
+[22:59:16] [ERROR] MSCL ERROR: Failed to get the Datalogging Session Info
+[22:59:19] [INFO ] AccelTool started.
+[22:59:19] [INFO ] Loaded config file: config/acceltool.ini
+[22:59:19] [INFO ] Using port: COM3
+[22:59:19] [INFO ] Using node address: 56384
+[22:59:19] [INFO ] Using baudrate: 3000000
+[22:59:19] [INFO ] Using sample rate: 2048
+[22:59:19] [INFO ] Opening CSV file: accel_data.csv
+[23:00:07] [INFO ] AccelTool started.
+[23:00:07] [INFO ] Loaded config file: config/acceltool.ini
+[23:00:07] [INFO ] Using port: COM3
+[23:00:07] [INFO ] Using node address: 56384
+[23:00:07] [INFO ] Using baudrate: 3000000
+[23:00:07] [INFO ] Using sample rate: 1024
+[23:00:07] [INFO ] Opening CSV file: accel_data.csv
+[23:00:10] [ERROR] MSCL ERROR: Failed to get the Datalogging Session Info
+[23:00:11] [INFO ] AccelTool started.
+[23:00:11] [INFO ] Loaded config file: config/acceltool.ini
+[23:00:11] [INFO ] Using port: COM3
+[23:00:11] [INFO ] Using node address: 56384
+[23:00:11] [INFO ] Using baudrate: 3000000
+[23:00:11] [INFO ] Using sample rate: 1024
+[23:00:11] [INFO ] Opening CSV file: accel_data.csv
+[23:00:26] [INFO ] AccelTool started.
+[23:00:26] [INFO ] Loaded config file: config/acceltool.ini
+[23:00:26] [INFO ] Using port: COM3
+[23:00:26] [INFO ] Using node address: 56384
+[23:00:26] [INFO ] Using baudrate: 3000000
+[23:00:26] [INFO ] Using sample rate: 1024
+[23:00:26] [INFO ] Opening CSV file: accel_data.csv
+[23:00:28] [ERROR] STD ERROR: Failed to ping wireless node. Check power, range, frequency, LXRS/LXRS+, and node address.
+[23:00:31] [INFO ] AccelTool started.
+[23:00:31] [INFO ] Loaded config file: config/acceltool.ini
+[23:00:31] [INFO ] Using port: COM3
+[23:00:31] [INFO ] Using node address: 56384
+[23:00:31] [INFO ] Using baudrate: 3000000
+[23:00:31] [INFO ] Using sample rate: 1024
+[23:00:31] [INFO ] Opening CSV file: accel_data.csv
+[23:01:40] [INFO ] AccelTool started.
+[23:01:40] [INFO ] Loaded config file: config/acceltool.ini
+[23:01:40] [INFO ] Using port: COM3
+[23:01:40] [INFO ] Using node address: 56384
+[23:01:40] [INFO ] Using baudrate: 3000000
+[23:01:40] [INFO ] Using sample rate: 2048
+[23:01:40] [INFO ] Opening CSV file: accel_data.csv
