@@ -295,11 +295,9 @@ namespace acceltool
             oss << "- inactivityTimeoutSeconds is required and must be > 0\n";
         }
 
-        if (config.maxSamples == 0)
-        {
-            ok = false;
-            oss << "- maxSamples is required and must be > 0\n";
-        }
+        // maxSamples:
+        // > 0 : stop automatically after this many samples
+        // = 0 : unlimited
 
         if (config.readTimeoutMs == 0)
         {

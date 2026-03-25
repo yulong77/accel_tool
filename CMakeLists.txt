@@ -12,6 +12,21 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
+set(MSCL_ROOT ${CMAKE_SOURCE_DIR}/third_party/mscl)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(MSCL_LIB ${MSCL_ROOT}/lib/debug/MSCL.lib)
+    set(MSCL_DLL ${MSCL_ROOT}/bin/debug/MSCL.dll)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(MSCL_LIB ${MSCL_ROOT}/lib/release/MSCL.lib)
+    set(MSCL_DLL ${MSCL_ROOT}/bin/release/MSCL.dll)
+else()
+    message(FATAL_ERROR "Unsupported build type: ${CMAKE_BUILD_TYPE}")
+endif()
+
+message(STATUS "Using MSCL lib: ${MSCL_LIB}")
+message(STATUS "Using MSCL dll: ${MSCL_DLL}")
+
 add_library(acceltool_core
     src/backend/wireless_accelerometer_manager.cpp
     src/core/app_config.cpp
@@ -25,17 +40,12 @@ add_library(acceltool_core
 target_include_directories(acceltool_core
     PUBLIC
         ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_SOURCE_DIR}/third_party/mscl/include
-)
-
-target_link_directories(acceltool_core
-    PUBLIC
-        ${CMAKE_SOURCE_DIR}/third_party/mscl/lib
+        ${MSCL_ROOT}/include
 )
 
 target_link_libraries(acceltool_core
     PUBLIC
-        MSCL
+        ${MSCL_LIB}
 )
 
 add_executable(AccelTool
@@ -49,11 +59,12 @@ target_link_libraries(AccelTool
 
 add_custom_command(TARGET AccelTool POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/third_party/mscl/bin/MSCL.dll
+        ${MSCL_DLL}
         $<TARGET_FILE_DIR:AccelTool>
 )
 
 if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
     target_compile_options(acceltool_core PRIVATE /W4 /permissive-)
     target_compile_options(AccelTool PRIVATE /W4 /permissive-)
 else()

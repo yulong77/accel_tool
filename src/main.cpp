@@ -5,6 +5,8 @@
 #include <thread>
 #include <utility>
 #include <vector>
+#include <iostream>
+#include <limits>
 
 #include "acceltool/backend/wireless_accelerometer_manager.h"
 #include "acceltool/core/app_config.h"
@@ -161,7 +163,7 @@ namespace acceltool
             throw std::runtime_error("Writer thread did not finish cleanly.");
         }
 
-        if (pushedToRaw != config.maxSamples)
+        if (config.maxSamples > 0 && pushedToRaw != config.maxSamples)
         {
             throw std::runtime_error(
                 "samplesPushedToRawQueue does not match config.maxSamples. "
@@ -231,7 +233,19 @@ namespace acceltool
                 std::to_string(writeQueue.size()));
         }
     }
+
+    void waitForEnterToExit(const std::string& message)
+    {
+        std::cout << '\n' << message << '\n';
+        std::cout << "Press Enter to exit...";
+        std::cout.flush();
+
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.get();
+    }
 }
+
 
 int main(int argc, char* argv[])
 {
@@ -274,15 +288,36 @@ int main(int argc, char* argv[])
         CsvWriter writer;
         DisplayCsvWriter displayWriter;
 
+        try
+        {
+            manager.connect(config);
+            manager.initialize();
+            manager.startSampling();
+        }
+        catch (const mscl::Error& e)
+        {
+            logError(std::string("MSCL ERROR during device setup: ") + e.what());
+            shutdownLogger();
+            waitForEnterToExit(
+                std::string("Please connect the device and try again.\n\n")
+                + "MSCL details: " + e.what());
+            return 1;
+        }
+        catch (const std::exception& e)
+        {
+            logError(std::string("STD ERROR during device setup: ") + e.what());
+            shutdownLogger();
+            waitForEnterToExit(
+                std::string("Please connect the device and try again.\n\n")
+                + "Details: " + e.what());
+            return 1;
+        }
+
         writer.open(config.outputCsvPath);
         writer.writeHeader();
 
         displayWriter.open(config.outputDisplayCsvPath);
         displayWriter.writeHeader();
-
-        manager.connect(config);
-        manager.initialize();
-        manager.startSampling();
 
         BlockingQueue<std::vector<RawSample>> rawQueue(config.rawQueueCapacityBatches);
         BlockingQueue<WritePayload> writeQueue(config.writeQueueCapacityBatches);
@@ -293,45 +328,51 @@ int main(int argc, char* argv[])
 
         std::thread acquisitionThread([&]() {
             stats.acquisitionThreadStarted = true;
-
+        
             try
             {
+                const bool unlimitedSamples = (config.maxSamples == 0);
+        
                 while (!stopRequested.load())
                 {
                     const std::size_t pushedAlready = stats.samplesPushedToRawQueue.load();
-                    if (pushedAlready >= config.maxSamples)
+        
+                    if (!unlimitedSamples && pushedAlready >= config.maxSamples)
                     {
                         break;
                     }
-
+        
                     ++stats.deviceReadCalls;
-
+        
                     std::vector<RawSample> batch = manager.readAvailableSamples(config.readTimeoutMs);
                     if (batch.empty())
                     {
                         ++stats.emptyReadCount;
                         continue;
                     }
-
+        
                     stats.samplesReceivedFromDevice += batch.size();
-
-                    const std::size_t remaining = config.maxSamples - pushedAlready;
-                    if (batch.size() > remaining)
+        
+                    if (!unlimitedSamples)
                     {
-                        batch.resize(remaining);
+                        const std::size_t remaining = config.maxSamples - pushedAlready;
+                        if (batch.size() > remaining)
+                        {
+                            batch.resize(remaining);
+                        }
                     }
-
+        
                     const std::size_t batchCount = batch.size();
                     if (batchCount == 0)
                     {
                         continue;
                     }
-
+        
                     if (!rawQueue.push(std::move(batch)))
                     {
                         throw std::runtime_error("Failed to push batch into rawQueue because the queue is closed.");
                     }
-
+        
                     stats.samplesPushedToRawQueue += batchCount;
                 }
             }
@@ -340,7 +381,7 @@ int main(int argc, char* argv[])
                 workerError.captureIfEmpty("acquisitionThread", std::current_exception());
                 requestStop(stopRequested, rawQueue, writeQueue);
             }
-
+        
             rawQueue.close();
             stats.acquisitionThreadFinished = true;
         });
@@ -494,18 +535,24 @@ int main(int argc, char* argv[])
 
         logInfo("Program finished successfully.");
         shutdownLogger();
+        waitForEnterToExit("Program finished successfully.");
         return 0;
     }
+
     catch (const mscl::Error& e)
     {
         acceltool::logError(std::string("MSCL ERROR: ") + e.what());
         acceltool::shutdownLogger();
+        acceltool::waitForEnterToExit(
+            std::string("Program failed.\n\nDetails: ") + e.what());
         return 1;
     }
     catch (const std::exception& e)
     {
         acceltool::logError(std::string("STD ERROR: ") + e.what());
         acceltool::shutdownLogger();
+        acceltool::waitForEnterToExit(
+            std::string("Program failed.\n\nDetails: ") + e.what());
         return 1;
     }
 }

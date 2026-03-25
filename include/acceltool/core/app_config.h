@@ -31,7 +31,7 @@ namespace acceltool
         bool unlimitedDuration = false;
 
         // Acquisition
-        // Acquisition
+        // 0 means unlimited. Any positive value means stop after that many samples.
         std::size_t maxSamples = 0;
         std::uint32_t readTimeoutMs = 0;
         AxisMode axisMode = AxisMode::XYZ;
