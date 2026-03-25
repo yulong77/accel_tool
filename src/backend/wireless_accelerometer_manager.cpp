@@ -242,11 +242,6 @@ namespace acceltool
         m_configReport.requestedUseLxrsPlus = m_config.useLxrsPlus;
         m_configReport.before = readCurrentNodeConfigSnapshot();
 
-        if (m_config.printCurrentNodeConfig)
-        {
-            printNodeConfigSnapshot("Current Node Configuration (Before Apply)", m_configReport.before);
-        }
-
         optionallyApplyConfig();
     }
 
@@ -256,14 +251,17 @@ namespace acceltool
         {
             throw std::runtime_error("Cannot start sampling: manager not fully connected.");
         }
-
+    
         if (!m_config.useSyncSampling)
         {
             throw std::runtime_error("This version currently requires useSyncSampling=true.");
         }
-
+    
+        m_sampleCounter = 0;
+        m_dumpedChannels = false;
+    
         waitForNodeToStabilize(10, 300);
-
+    
         buildAndStartSyncNetwork();
     }
 
@@ -283,29 +281,34 @@ namespace acceltool
         m_samplingStarted = false;
     }
 
-    std::optional<RawSample> WirelessAccelerometerManager::readNextSample(std::uint32_t timeoutMs)
+    std::vector<RawSample> WirelessAccelerometerManager::readAvailableSamples(std::uint32_t timeoutMs)
     {
+        std::vector<RawSample> out;
+    
         if (!m_baseStation)
         {
-            return std::nullopt;
+            return out;
         }
-
-        for (const mscl::DataSweep& sweep : m_baseStation->getData(timeoutMs))
+    
+        const mscl::DataSweeps sweeps = m_baseStation->getData(timeoutMs);
+        out.reserve(sweeps.size());
+    
+        for (const mscl::DataSweep& sweep : sweeps)
         {
             if (m_config.dumpSweepChannelsAtStartup && !m_dumpedChannels)
             {
                 dumpSweepChannels(sweep);
                 m_dumpedChannels = true;
             }
-
+    
             RawSample sample{};
             if (tryConvertSweepToRawSample(sweep, sample))
             {
-                return sample;
+                out.push_back(sample);
             }
         }
-
-        return std::nullopt;
+    
+        return out;
     }
 
     bool WirelessAccelerometerManager::isConnected() const noexcept
@@ -558,7 +561,7 @@ namespace acceltool
     void WirelessAccelerometerManager::printCurrentConfig()
     {
         const NodeConfigSnapshot snapshot = readCurrentNodeConfigSnapshot();
-        printNodeConfigSnapshot("Current Node Configuration", snapshot);
+        printNodeConfigSnapshot("Node Configuration", snapshot);
     }
 
     void WirelessAccelerometerManager::optionallyApplyConfig()
@@ -627,7 +630,7 @@ namespace acceltool
 
         if (m_config.printCurrentNodeConfig)
         {
-            printNodeConfigSnapshot("Current Node Configuration (After Apply)", m_configReport.after);
+            printNodeConfigSnapshot("Node Configuration", m_configReport.after);
         }
 
         printConfigApplyReport(m_configReport);

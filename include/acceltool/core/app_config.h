@@ -31,9 +31,19 @@ namespace acceltool
         bool unlimitedDuration = false;
 
         // Acquisition
+        // Acquisition
         std::size_t maxSamples = 0;
         std::uint32_t readTimeoutMs = 0;
         AxisMode axisMode = AxisMode::XYZ;
+        double spec = 0.0;
+
+        // Queues
+        std::size_t rawQueueCapacityBatches = 256;
+        std::size_t writeQueueCapacityBatches = 256;
+
+        // Display aggregation
+        std::size_t displayAggregationSamples = 100;
+        std::string outputDisplayCsvPath;
 
         // Output
         std::string outputCsvPath;

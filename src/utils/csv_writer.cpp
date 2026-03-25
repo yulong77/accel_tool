@@ -28,6 +28,8 @@ namespace acceltool
                  "z,"
                  "magnitude_xy,"
                  "magnitude_xyz,"
+                 "applied_spec,"
+                 "exceeds_spec,"
                  "base_rssi,"
                  "node_rssi\n";
     }
@@ -43,6 +45,8 @@ namespace acceltool
             << sample.z << ','
             << sample.magnitudeXY << ','
             << sample.magnitudeXYZ << ','
+            << sample.appliedSpec << ','
+            << (sample.exceedsSpec ? 1 : 0) << ','
             << sample.baseRssi << ','
             << sample.nodeRssi << '\n';
     }

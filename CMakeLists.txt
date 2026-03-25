@@ -16,7 +16,9 @@ add_library(acceltool_core
     src/backend/wireless_accelerometer_manager.cpp
     src/core/app_config.cpp
     src/processing/magnitude_calculator.cpp
+    src/processing/display_aggregator.cpp
     src/utils/csv_writer.cpp
+    src/utils/display_csv_writer.cpp
     src/utils/logger.cpp
 )
 
@@ -58,4 +60,3 @@ else()
     target_compile_options(acceltool_core PRIVATE -Wall -Wextra -Wpedantic)
     target_compile_options(AccelTool PRIVATE -Wall -Wextra -Wpedantic)
 endif()
-

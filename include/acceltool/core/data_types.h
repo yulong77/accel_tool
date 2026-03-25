@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace acceltool
 {
@@ -37,27 +38,45 @@ namespace acceltool
 
         double magnitudeXY = 0.0;
         double magnitudeXYZ = 0.0;
+        double appliedSpec = 0.0;
+        bool exceedsSpec = false;
 
         int baseRssi = 0;
         int nodeRssi = 0;
     };
 
+    struct DisplayBucket
+    {
+        std::uint64_t bucketIndex = 0;
+
+        std::uint64_t startSampleIndex = 0;
+        std::uint64_t endSampleIndex = 0;
+
+        double startTimestampSeconds = 0.0;
+        double endTimestampSeconds = 0.0;
+
+        std::size_t sampleCount = 0;
+
+        double maxMagnitudeXY = 0.0;
+        double maxMagnitudeXYZ = 0.0;
+    };
+
     struct NodeConfigSnapshot
     {
         int nodeAddress = 0;
-    
+
         std::string modelNumber;
         std::string serial;
         std::string firmware;
-    
+
         std::string communicationProtocol;
         std::string defaultMode;
         std::string samplingMode;
-    
+
         std::uint32_t sampleRateHz = 0;
         std::uint32_t inactivityTimeoutSeconds = 0;
         bool unlimitedDuration = false;
-    
+
         std::uint32_t numSweeps = 0;
         std::size_t activeChannelCount = 0;
         std::uint16_t activeChannelMask = 0;

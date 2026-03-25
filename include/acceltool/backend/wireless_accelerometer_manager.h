@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <optional>
 #include <string>
+#include <vector>
 
 #include <mscl/stdafx.h>
 #include <mscl/MicroStrain/Wireless/BaseStation.h>
@@ -29,7 +29,7 @@ namespace acceltool
         void startSampling();
         void stopSampling();
 
-        std::optional<RawSample> readNextSample(std::uint32_t timeoutMs = 10);
+        std::vector<RawSample> readAvailableSamples(std::uint32_t timeoutMs = 10);
 
         bool isConnected() const noexcept;
         int nodeAddress() const noexcept;

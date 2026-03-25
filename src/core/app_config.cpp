@@ -182,8 +182,28 @@ namespace acceltool
                 {
                     AxisMode mode{};
                     if (!parseAxisMode(value, mode))
-                        throw std::runtime_error("invalid axisMode, use XY or XYZ");
+                        throw std::runtime_error("invalid axisMode, expected XY or XYZ");
                     config.axisMode = mode;
+                }
+                else if (key == "spec")
+                {
+                    config.spec = std::stod(value);
+                }
+                else if (key == "rawQueueCapacityBatches")
+                {
+                    config.rawQueueCapacityBatches = static_cast<std::size_t>(std::stoull(value));
+                }
+                else if (key == "writeQueueCapacityBatches")
+                {
+                    config.writeQueueCapacityBatches = static_cast<std::size_t>(std::stoull(value));
+                }
+                else if (key == "displayAggregationSamples")
+                {
+                    config.displayAggregationSamples = static_cast<std::size_t>(std::stoull(value));
+                }
+                else if (key == "outputDisplayCsvPath")
+                {
+                    config.outputDisplayCsvPath = value;
                 }
                 else if (key == "outputCsvPath")
                 {
@@ -286,11 +306,40 @@ namespace acceltool
             ok = false;
             oss << "- readTimeoutMs is required and must be > 0\n";
         }
+        if (config.spec <= 0.0)
+        {
+            ok = false;
+            oss << "- spec is required and must be > 0\n";
+        }
+
+        if (config.rawQueueCapacityBatches == 0)
+        {
+            ok = false;
+            oss << "- rawQueueCapacityBatches must be > 0\n";
+        }
+
+        if (config.writeQueueCapacityBatches == 0)
+        {
+            ok = false;
+            oss << "- writeQueueCapacityBatches must be > 0\n";
+        }
+
+        if (config.displayAggregationSamples == 0)
+        {
+            ok = false;
+            oss << "- displayAggregationSamples must be > 0\n";
+        }
 
         if (config.outputCsvPath.empty())
         {
             ok = false;
             oss << "- outputCsvPath is required\n";
+        }
+
+        if (config.outputDisplayCsvPath.empty())
+        {
+            ok = false;
+            oss << "- outputDisplayCsvPath is required\n";
         }
 
         if (config.printEvery == 0)
@@ -303,4 +352,3 @@ namespace acceltool
         return ok;
     }
 }
-

@@ -270,3 +270,276 @@
 [01:06:12] [INFO ] sample=4899, x=-0.016908, y=-0.012120, z=0.000000, magXY=0.020803, magXYZ=0.020803
 [01:06:12] [INFO ] sample=4999, x=-0.014830, y=-0.011933, z=0.000000, magXY=0.019035, magXYZ=0.019035
 [01:06:13] [INFO ] Program finished successfully.
+[22:06:19] [INFO ] AccelTool started.
+[22:06:19] [INFO ] Loaded config file: config/acceltool.ini
+[22:06:19] [INFO ] Using port: COM3
+[22:06:19] [INFO ] Using node address: 56384
+[22:06:19] [INFO ] Using baudrate: 3000000
+[22:06:19] [INFO ] Requested sample rate from ini: 2048
+[22:06:19] [INFO ] Opening raw/result CSV file: accel_data.csv
+[22:06:19] [INFO ] Opening display CSV file: display_data.csv
+[22:06:23] [INFO ] sample=99, x=0.012432, y=-0.024354, z=0.000000, magXY=0.027344, magXYZ=0.027344
+[22:06:23] [INFO ] sample=499, x=0.012700, y=-0.025370, z=0.000000, magXY=0.028371, magXYZ=0.028371
+[22:06:23] [INFO ] sample=899, x=0.013817, y=-0.024620, z=0.000000, magXY=0.028232, magXYZ=0.028232
+[22:06:24] [INFO ] sample=1299, x=0.012668, y=-0.026463, z=0.000000, magXY=0.029339, magXYZ=0.029339
+[22:06:24] [INFO ] sample=1699, x=0.011488, y=-0.024245, z=0.000000, magXY=0.026829, magXYZ=0.026829
+[22:06:24] [INFO ] sample=2099, x=0.011708, y=-0.024589, z=0.000000, magXY=0.027234, magXYZ=0.027234
+[22:06:24] [INFO ] sample=2499, x=0.013251, y=-0.023198, z=0.000000, magXY=0.026716, magXYZ=0.026716
+[22:06:24] [INFO ] sample=2899, x=0.013754, y=-0.025885, z=0.000000, magXY=0.029313, magXYZ=0.029313
+[22:06:25] [INFO ] sample=3299, x=0.018335, y=-0.026245, z=0.000000, magXY=0.032015, magXYZ=0.032015
+[22:06:25] [INFO ] sample=3699, x=0.011425, y=-0.026354, z=0.000000, magXY=0.028724, magXYZ=0.028724
+[22:06:25] [INFO ] sample=4099, x=0.010323, y=-0.023182, z=0.000000, magXY=0.025377, magXYZ=0.025377
+[22:06:25] [INFO ] sample=4499, x=0.011708, y=-0.025229, z=0.000000, magXY=0.027813, magXYZ=0.027813
+[22:06:25] [INFO ] sample=4899, x=0.011393, y=-0.025214, z=0.000000, magXY=0.027668, magXYZ=0.027668
+[22:06:25] [INFO ] sample=4999, x=0.015423, y=-0.026135, z=0.000000, magXY=0.030347, magXYZ=0.030347
+[22:06:27] [INFO ] Acquisition done.
+[22:06:27] [INFO ] acquiredSamples        = 5000
+[22:06:27] [INFO ] processedSamples       = 5000
+[22:06:27] [INFO ] writtenSamples         = 5000
+[22:06:27] [INFO ] writtenDisplayBuckets  = 50
+[22:06:27] [INFO ] rawQueuePeakBatches    = 1
+[22:06:27] [INFO ] writeQueuePeakBatches  = 1
+[22:06:27] [INFO ] Program finished successfully.
+[22:56:32] [INFO ] AccelTool started.
+[22:56:32] [INFO ] Loaded config file: config/acceltool.ini
+[22:56:32] [INFO ] Using port: COM3
+[22:56:32] [INFO ] Using node address: 56384
+[22:56:32] [INFO ] Using baudrate: 3000000
+[22:56:32] [INFO ] Requested sample rate from ini: 2048
+[22:56:32] [INFO ] Opening raw/result CSV file: accel_data.csv
+[22:56:32] [INFO ] Opening display CSV file: display_data.csv
+[22:56:36] [INFO ] sample=99, x=0.021782, y=-0.016823, z=0.000000, magXY=0.027522, magXYZ=0.027522
+[22:56:36] [INFO ] sample=211, x=0.023340, y=-0.016807, z=0.000000, magXY=0.028762, magXYZ=0.028762
+[22:56:36] [INFO ] sample=307, x=0.020349, y=-0.017995, z=0.000000, magXY=0.027165, magXYZ=0.027165
+[22:56:36] [INFO ] sample=403, x=0.023655, y=-0.017448, z=0.000000, magXY=0.029394, magXYZ=0.029394
+[22:56:36] [INFO ] sample=499, x=0.021609, y=-0.019401, z=0.000000, magXY=0.029040, magXYZ=0.029040
+[22:56:36] [INFO ] sample=611, x=0.020774, y=-0.017354, z=0.000000, magXY=0.027069, magXYZ=0.027069
+[22:56:36] [INFO ] sample=707, x=0.022522, y=-0.018323, z=0.000000, magXY=0.029034, magXYZ=0.029034
+[22:56:36] [INFO ] sample=803, x=0.023859, y=-0.018229, z=0.000000, magXY=0.030026, magXYZ=0.030026
+[22:56:36] [INFO ] sample=899, x=0.023293, y=-0.018042, z=0.000000, magXY=0.029463, magXYZ=0.029463
+[22:56:37] [INFO ] sample=1019, x=0.020349, y=-0.018651, z=0.000000, magXY=0.027604, magXYZ=0.027604
+[22:56:37] [INFO ] sample=1107, x=0.023183, y=-0.018698, z=0.000000, magXY=0.029783, magXYZ=0.029783
+[22:56:37] [INFO ] sample=1203, x=0.021026, y=-0.017964, z=0.000000, magXY=0.027655, magXYZ=0.027655
+[22:56:37] [INFO ] sample=1299, x=0.019185, y=-0.015386, z=0.000000, magXY=0.024592, magXYZ=0.024592
+[22:56:37] [INFO ] sample=1411, x=0.020585, y=-0.017604, z=0.000000, magXY=0.027086, magXYZ=0.027086
+[22:56:37] [INFO ] sample=1507, x=0.025528, y=-0.019323, z=0.000000, magXY=0.032016, magXYZ=0.032016
+[22:56:37] [INFO ] sample=1603, x=0.024568, y=-0.017917, z=0.000000, magXY=0.030407, magXYZ=0.030407
+[22:56:37] [INFO ] sample=1699, x=0.017894, y=-0.018167, z=0.000000, magXY=0.025500, magXYZ=0.025500
+[22:56:37] [INFO ] sample=1811, x=0.023608, y=-0.017104, z=0.000000, magXY=0.029153, magXYZ=0.029153
+[22:56:37] [INFO ] sample=1907, x=0.024017, y=-0.019276, z=0.000000, magXY=0.030796, magXYZ=0.030796
+[22:56:37] [INFO ] sample=2003, x=0.019421, y=-0.017073, z=0.000000, magXY=0.025858, magXYZ=0.025858
+[22:56:37] [INFO ] sample=2099, x=0.022049, y=-0.017214, z=0.000000, magXY=0.027973, magXYZ=0.027973
+[22:56:37] [INFO ] sample=2211, x=0.024631, y=-0.019136, z=0.000000, magXY=0.031190, magXYZ=0.031190
+[22:56:37] [INFO ] sample=2307, x=0.020176, y=-0.018526, z=0.000000, magXY=0.027392, magXYZ=0.027392
+[22:56:37] [INFO ] sample=2403, x=0.020145, y=-0.017651, z=0.000000, magXY=0.026784, magXYZ=0.026784
+[22:56:37] [INFO ] sample=2499, x=0.022207, y=-0.017698, z=0.000000, magXY=0.028397, magXYZ=0.028397
+[22:56:37] [INFO ] sample=2611, x=0.022254, y=-0.018573, z=0.000000, magXY=0.028986, magXYZ=0.028986
+[22:56:37] [INFO ] sample=2707, x=0.023387, y=-0.017807, z=0.000000, magXY=0.029395, magXYZ=0.029395
+[22:56:37] [INFO ] sample=2803, x=0.022710, y=-0.018542, z=0.000000, magXY=0.029318, magXYZ=0.029318
+[22:56:37] [INFO ] sample=2899, x=0.019972, y=-0.017245, z=0.000000, magXY=0.026387, magXYZ=0.026387
+[22:56:37] [INFO ] sample=3011, x=0.021561, y=-0.017917, z=0.000000, magXY=0.028034, magXYZ=0.028034
+[22:56:38] [INFO ] sample=3108, x=0.023655, y=-0.018057, z=0.000000, magXY=0.029759, magXYZ=0.029759
+[22:56:38] [INFO ] sample=3203, x=0.021546, y=-0.018761, z=0.000000, magXY=0.028569, magXYZ=0.028569
+[22:56:38] [INFO ] sample=3299, x=0.023214, y=-0.018761, z=0.000000, magXY=0.029847, magXYZ=0.029847
+[22:56:38] [INFO ] sample=3411, x=0.023859, y=-0.018839, z=0.000000, magXY=0.030400, magXYZ=0.030400
+[22:56:38] [INFO ] sample=3507, x=0.020223, y=-0.018011, z=0.000000, magXY=0.027081, magXYZ=0.027081
+[22:56:38] [INFO ] sample=3603, x=0.022065, y=-0.016745, z=0.000000, magXY=0.027700, magXYZ=0.027700
+[22:56:38] [INFO ] sample=3699, x=0.022506, y=-0.017245, z=0.000000, magXY=0.028353, magXYZ=0.028353
+[22:56:38] [INFO ] sample=3811, x=0.022884, y=-0.018526, z=0.000000, magXY=0.029443, magXYZ=0.029443
+[22:56:38] [INFO ] sample=3907, x=0.023261, y=-0.016854, z=0.000000, magXY=0.028726, magXYZ=0.028726
+[22:56:38] [INFO ] sample=4003, x=0.021766, y=-0.017511, z=0.000000, magXY=0.027935, magXYZ=0.027935
+[22:56:38] [INFO ] sample=4099, x=0.022270, y=-0.018323, z=0.000000, magXY=0.028839, magXYZ=0.028839
+[22:56:38] [INFO ] sample=4211, x=0.021168, y=-0.017542, z=0.000000, magXY=0.027492, magXYZ=0.027492
+[22:56:38] [INFO ] sample=4307, x=0.022443, y=-0.017948, z=0.000000, magXY=0.028737, magXYZ=0.028737
+[22:56:38] [INFO ] sample=4403, x=0.021971, y=-0.017932, z=0.000000, magXY=0.028360, magXYZ=0.028360
+[22:56:38] [INFO ] sample=4499, x=0.023749, y=-0.017620, z=0.000000, magXY=0.029572, magXYZ=0.029572
+[22:56:38] [INFO ] sample=4611, x=0.021640, y=-0.017354, z=0.000000, magXY=0.027739, magXYZ=0.027739
+[22:56:38] [INFO ] sample=4707, x=0.021089, y=-0.017136, z=0.000000, magXY=0.027173, magXYZ=0.027173
+[22:56:38] [INFO ] sample=4803, x=0.023765, y=-0.018151, z=0.000000, magXY=0.029904, magXYZ=0.029904
+[22:56:38] [INFO ] sample=4899, x=0.021766, y=-0.019089, z=0.000000, magXY=0.028951, magXYZ=0.028951
+[22:56:38] [INFO ] sample=4999, x=0.020460, y=-0.016042, z=0.000000, magXY=0.025999, magXYZ=0.025999
+[22:56:40] [INFO ] ========== FINAL STATS ==========
+[22:56:40] [INFO ] deviceReadCalls            = 405
+[22:56:40] [INFO ] emptyReadCount             = 94
+[22:56:40] [INFO ] samplesReceivedFromDevice  = 5012
+[22:56:40] [INFO ] samplesPushedToRawQueue    = 5000
+[22:56:40] [INFO ] samplesPoppedFromRawQueue  = 5000
+[22:56:40] [INFO ] samplesProcessed           = 5000
+[22:56:40] [INFO ] samplesPushedToWriteQueue  = 5000
+[22:56:40] [INFO ] samplesPoppedFromWriteQueue= 5000
+[22:56:40] [INFO ] samplesWrittenToCsv        = 5000
+[22:56:40] [INFO ] displayBucketsProduced     = 50
+[22:56:40] [INFO ] displayBucketsWritten      = 50
+[22:56:40] [INFO ] rawQueueCurrentBatches     = 0
+[22:56:40] [INFO ] rawQueuePeakBatches        = 1
+[22:56:40] [INFO ] writeQueueCurrentBatches   = 0
+[22:56:40] [INFO ] writeQueuePeakBatches      = 1
+[22:56:40] [INFO ] acquisitionThreadStarted   = true
+[22:56:40] [INFO ] acquisitionThreadFinished  = true
+[22:56:40] [INFO ] processingThreadStarted    = true
+[22:56:40] [INFO ] processingThreadFinished   = true
+[22:56:40] [INFO ] writerThreadStarted        = true
+[22:56:40] [INFO ] writerThreadFinished       = true
+[22:56:40] [INFO ] Program finished successfully.
+[22:59:59] [INFO ] AccelTool started.
+[22:59:59] [INFO ] Loaded config file: config/acceltool.ini
+[22:59:59] [INFO ] Using port: COM3
+[22:59:59] [INFO ] Using node address: 56384
+[22:59:59] [INFO ] Using baudrate: 3000000
+[22:59:59] [INFO ] Requested sample rate from ini: 2048
+[22:59:59] [INFO ] Opening raw/result CSV file: accel_data.csv
+[22:59:59] [INFO ] Opening display CSV file: display_data.csv
+[23:00:03] [INFO ] sample=99, x=0.020161, y=-0.019214, z=0.000000, magXY=0.027850, magXYZ=0.027850
+[23:00:03] [INFO ] sample=211, x=0.021986, y=-0.018276, z=0.000000, magXY=0.028591, magXYZ=0.028591
+[23:00:03] [INFO ] sample=307, x=0.023277, y=-0.017979, z=0.000000, magXY=0.029412, magXYZ=0.029412
+[23:00:03] [INFO ] sample=403, x=0.020035, y=-0.019854, z=0.000000, magXY=0.028206, magXYZ=0.028206
+[23:00:03] [INFO ] sample=499, x=0.023671, y=-0.017042, z=0.000000, magXY=0.029167, magXYZ=0.029167
+[23:00:03] [INFO ] sample=611, x=0.023576, y=-0.018729, z=0.000000, magXY=0.030110, magXYZ=0.030110
+[23:00:03] [INFO ] sample=707, x=0.020271, y=-0.018901, z=0.000000, magXY=0.027716, magXYZ=0.027716
+[23:00:03] [INFO ] sample=803, x=0.022852, y=-0.016557, z=0.000000, magXY=0.028220, magXYZ=0.028220
+[23:00:03] [INFO ] sample=899, x=0.021923, y=-0.018120, z=0.000000, magXY=0.028442, magXYZ=0.028442
+[23:00:04] [INFO ] sample=1019, x=0.021136, y=-0.016761, z=0.000000, magXY=0.026975, magXYZ=0.026975
+[23:00:04] [INFO ] sample=1107, x=0.022427, y=-0.017682, z=0.000000, magXY=0.028559, magXYZ=0.028559
+[23:00:04] [INFO ] sample=1203, x=0.021247, y=-0.018448, z=0.000000, magXY=0.028138, magXYZ=0.028138
+[23:00:04] [INFO ] sample=1299, x=0.023702, y=-0.017854, z=0.000000, magXY=0.029674, magXYZ=0.029674
+[23:00:04] [INFO ] sample=1411, x=0.020900, y=-0.019682, z=0.000000, magXY=0.028709, magXYZ=0.028709
+[23:00:04] [INFO ] sample=1507, x=0.021325, y=-0.016370, z=0.000000, magXY=0.026884, magXYZ=0.026884
+[23:00:04] [INFO ] sample=1603, x=0.022411, y=-0.017995, z=0.000000, magXY=0.028742, magXYZ=0.028742
+[23:00:04] [INFO ] sample=1699, x=0.023230, y=-0.018042, z=0.000000, magXY=0.029413, magXYZ=0.029413
+[23:00:04] [INFO ] sample=1811, x=0.021498, y=-0.016745, z=0.000000, magXY=0.027250, magXYZ=0.027250
+[23:00:04] [INFO ] sample=1907, x=0.022333, y=-0.017104, z=0.000000, magXY=0.028130, magXYZ=0.028130
+[23:00:04] [INFO ] sample=2003, x=0.026142, y=-0.018636, z=0.000000, magXY=0.032104, magXYZ=0.032104
+[23:00:04] [INFO ] sample=2099, x=0.019421, y=-0.018229, z=0.000000, magXY=0.026636, magXYZ=0.026636
+[23:00:04] [INFO ] sample=2211, x=0.022773, y=-0.017245, z=0.000000, magXY=0.028566, magXYZ=0.028566
+[23:00:04] [INFO ] sample=2307, x=0.024269, y=-0.019276, z=0.000000, magXY=0.030993, magXYZ=0.030993
+[23:00:04] [INFO ] sample=2403, x=0.021089, y=-0.017276, z=0.000000, magXY=0.027262, magXYZ=0.027262
+[23:00:04] [INFO ] sample=2499, x=0.019531, y=-0.016932, z=0.000000, magXY=0.025849, magXYZ=0.025849
+[23:00:04] [INFO ] sample=2611, x=0.020822, y=-0.018057, z=0.000000, magXY=0.027561, magXYZ=0.027561
+[23:00:04] [INFO ] sample=2707, x=0.023309, y=-0.017386, z=0.000000, magXY=0.029078, magXYZ=0.029078
+[23:00:04] [INFO ] sample=2803, x=0.021656, y=-0.019901, z=0.000000, magXY=0.029411, magXYZ=0.029411
+[23:00:04] [INFO ] sample=2899, x=0.021829, y=-0.018198, z=0.000000, magXY=0.028420, magXYZ=0.028420
+[23:00:04] [INFO ] sample=3011, x=0.024678, y=-0.018964, z=0.000000, magXY=0.031123, magXYZ=0.031123
+[23:00:05] [INFO ] sample=3108, x=0.022868, y=-0.019292, z=0.000000, magXY=0.029918, magXYZ=0.029918
+[23:00:05] [INFO ] sample=3203, x=0.021908, y=-0.017464, z=0.000000, magXY=0.028017, magXYZ=0.028017
+[23:00:05] [INFO ] sample=3299, x=0.019751, y=-0.016479, z=0.000000, magXY=0.025723, magXYZ=0.025723
+[23:00:05] [INFO ] sample=3411, x=0.022207, y=-0.019089, z=0.000000, magXY=0.029283, magXYZ=0.029283
+[23:00:05] [INFO ] sample=3507, x=0.023246, y=-0.018542, z=0.000000, magXY=0.029735, magXYZ=0.029735
+[23:00:05] [INFO ] sample=3603, x=0.020869, y=-0.017792, z=0.000000, magXY=0.027424, magXYZ=0.027424
+[23:00:05] [INFO ] sample=3699, x=0.021435, y=-0.016964, z=0.000000, magXY=0.027336, magXYZ=0.027336
+[23:00:05] [INFO ] sample=3811, x=0.023277, y=-0.019589, z=0.000000, magXY=0.030423, magXYZ=0.030423
+[23:00:05] [INFO ] sample=3907, x=0.021971, y=-0.017120, z=0.000000, magXY=0.027853, magXYZ=0.027853
+[23:00:05] [INFO ] sample=4003, x=0.022679, y=-0.016511, z=0.000000, magXY=0.028052, magXYZ=0.028052
+[23:00:05] [INFO ] sample=4099, x=0.021939, y=-0.020136, z=0.000000, magXY=0.029779, magXYZ=0.029779
+[23:00:05] [INFO ] sample=4211, x=0.023198, y=-0.016464, z=0.000000, magXY=0.028447, magXYZ=0.028447
+[23:00:05] [INFO ] sample=4307, x=0.023828, y=-0.018479, z=0.000000, magXY=0.030154, magXYZ=0.030154
+[23:00:05] [INFO ] sample=4403, x=0.021105, y=-0.019151, z=0.000000, magXY=0.028499, magXYZ=0.028499
+[23:00:05] [INFO ] sample=4499, x=0.019924, y=-0.016073, z=0.000000, magXY=0.025599, magXYZ=0.025599
+[23:00:05] [INFO ] sample=4611, x=0.024395, y=-0.019042, z=0.000000, magXY=0.030947, magXYZ=0.030947
+[23:00:05] [INFO ] sample=4707, x=0.021672, y=-0.018792, z=0.000000, magXY=0.028684, magXYZ=0.028684
+[23:00:05] [INFO ] sample=4803, x=0.020963, y=-0.016667, z=0.000000, magXY=0.026781, magXYZ=0.026781
+[23:00:05] [INFO ] sample=4899, x=0.022333, y=-0.018995, z=0.000000, magXY=0.029318, magXYZ=0.029318
+[23:00:05] [INFO ] sample=4999, x=0.020098, y=-0.018214, z=0.000000, magXY=0.027123, magXYZ=0.027123
+[23:00:07] [INFO ] ========== FINAL STATS ==========
+[23:00:07] [INFO ] deviceReadCalls            = 404
+[23:00:07] [INFO ] emptyReadCount             = 93
+[23:00:07] [INFO ] samplesReceivedFromDevice  = 5012
+[23:00:07] [INFO ] samplesPushedToRawQueue    = 5000
+[23:00:07] [INFO ] samplesPoppedFromRawQueue  = 5000
+[23:00:07] [INFO ] samplesProcessed           = 5000
+[23:00:07] [INFO ] samplesPushedToWriteQueue  = 5000
+[23:00:07] [INFO ] samplesPoppedFromWriteQueue= 5000
+[23:00:07] [INFO ] samplesWrittenToCsv        = 5000
+[23:00:07] [INFO ] displayBucketsProduced     = 50
+[23:00:07] [INFO ] displayBucketsWritten      = 50
+[23:00:07] [INFO ] rawQueueCurrentBatches     = 0
+[23:00:07] [INFO ] rawQueuePeakBatches        = 1
+[23:00:07] [INFO ] writeQueueCurrentBatches   = 0
+[23:00:07] [INFO ] writeQueuePeakBatches      = 1
+[23:00:07] [INFO ] acquisitionThreadStarted   = true
+[23:00:07] [INFO ] acquisitionThreadFinished  = true
+[23:00:07] [INFO ] processingThreadStarted    = true
+[23:00:07] [INFO ] processingThreadFinished   = true
+[23:00:07] [INFO ] writerThreadStarted        = true
+[23:00:07] [INFO ] writerThreadFinished       = true
+[23:00:07] [INFO ] Program finished successfully.
+[23:00:18] [INFO ] AccelTool started.
+[23:00:18] [INFO ] Loaded config file: config/acceltool.ini
+[23:00:18] [INFO ] Using port: COM3
+[23:00:18] [INFO ] Using node address: 56384
+[23:00:18] [INFO ] Using baudrate: 3000000
+[23:00:18] [INFO ] Requested sample rate from ini: 2048
+[23:00:18] [INFO ] Opening raw/result CSV file: accel_data.csv
+[23:00:18] [INFO ] Opening display CSV file: display_data.csv
+[23:00:21] [INFO ] sample=99, x=0.018791, y=-0.016682, z=0.000000, magXY=0.025128, magXYZ=0.025128, spec=2.500000, exceedsSpec=0
+[23:00:21] [INFO ] sample=211, x=0.022836, y=-0.018511, z=0.000000, magXY=0.029396, magXYZ=0.029396, spec=2.500000, exceedsSpec=0
+[23:00:21] [INFO ] sample=307, x=0.023372, y=-0.018745, z=0.000000, magXY=0.029960, magXYZ=0.029960, spec=2.500000, exceedsSpec=0
+[23:00:21] [INFO ] sample=403, x=0.021325, y=-0.017276, z=0.000000, magXY=0.027445, magXYZ=0.027445, spec=2.500000, exceedsSpec=0
+[23:00:21] [INFO ] sample=499, x=0.022097, y=-0.018370, z=0.000000, magXY=0.028735, magXYZ=0.028735, spec=2.500000, exceedsSpec=0
+[23:00:21] [INFO ] sample=611, x=0.023529, y=-0.018167, z=0.000000, magXY=0.029726, magXYZ=0.029726, spec=2.500000, exceedsSpec=0
+[23:00:21] [INFO ] sample=707, x=0.021498, y=-0.017386, z=0.000000, magXY=0.027649, magXYZ=0.027649, spec=2.500000, exceedsSpec=0
+[23:00:21] [INFO ] sample=803, x=0.021656, y=-0.017323, z=0.000000, magXY=0.027732, magXYZ=0.027732, spec=2.500000, exceedsSpec=0
+[23:00:21] [INFO ] sample=899, x=0.023135, y=-0.018401, z=0.000000, magXY=0.029561, magXYZ=0.029561, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1019, x=0.022396, y=-0.017886, z=0.000000, magXY=0.028661, magXYZ=0.028661, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1107, x=0.023545, y=-0.018932, z=0.000000, magXY=0.030212, magXYZ=0.030212, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1203, x=0.020932, y=-0.018245, z=0.000000, magXY=0.027767, magXYZ=0.027767, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1299, x=0.021168, y=-0.016042, z=0.000000, magXY=0.026560, magXYZ=0.026560, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1411, x=0.021876, y=-0.019198, z=0.000000, magXY=0.029106, magXYZ=0.029106, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1507, x=0.022679, y=-0.018401, z=0.000000, magXY=0.029205, magXYZ=0.029205, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1603, x=0.022254, y=-0.018464, z=0.000000, magXY=0.028916, magXYZ=0.028916, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1699, x=0.022254, y=-0.018073, z=0.000000, magXY=0.028668, magXYZ=0.028668, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1811, x=0.020963, y=-0.016417, z=0.000000, magXY=0.026627, magXYZ=0.026627, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=1907, x=0.023356, y=-0.017667, z=0.000000, magXY=0.029285, magXYZ=0.029285, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2003, x=0.021483, y=-0.018495, z=0.000000, magXY=0.028347, magXYZ=0.028347, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2099, x=0.020727, y=-0.018151, z=0.000000, magXY=0.027551, magXYZ=0.027551, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2211, x=0.024048, y=-0.017636, z=0.000000, magXY=0.029822, magXYZ=0.029822, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2307, x=0.020932, y=-0.017823, z=0.000000, magXY=0.027492, magXYZ=0.027492, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2403, x=0.021388, y=-0.017432, z=0.000000, magXY=0.027593, magXYZ=0.027593, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2499, x=0.023230, y=-0.019136, z=0.000000, magXY=0.030096, magXYZ=0.030096, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2611, x=0.022348, y=-0.018167, z=0.000000, magXY=0.028801, magXYZ=0.028801, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2707, x=0.020412, y=-0.018479, z=0.000000, magXY=0.027535, magXYZ=0.027535, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2803, x=0.022632, y=-0.018589, z=0.000000, magXY=0.029287, magXYZ=0.029287, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=2899, x=0.022128, y=-0.016698, z=0.000000, magXY=0.027721, magXYZ=0.027721, spec=2.500000, exceedsSpec=0
+[23:00:22] [INFO ] sample=3011, x=0.020585, y=-0.017948, z=0.000000, magXY=0.027311, magXYZ=0.027311, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=3108, x=0.021609, y=-0.017714, z=0.000000, magXY=0.027941, magXYZ=0.027941, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=3203, x=0.022947, y=-0.018276, z=0.000000, magXY=0.029335, magXYZ=0.029335, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=3299, x=0.022474, y=-0.018964, z=0.000000, magXY=0.029406, magXYZ=0.029406, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=3411, x=0.020963, y=-0.016714, z=0.000000, magXY=0.026811, magXYZ=0.026811, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=3507, x=0.021971, y=-0.018042, z=0.000000, magXY=0.028429, magXYZ=0.028429, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=3603, x=0.023324, y=-0.017636, z=0.000000, magXY=0.029241, magXYZ=0.029241, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=3699, x=0.021152, y=-0.017401, z=0.000000, magXY=0.027390, magXYZ=0.027390, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=3811, x=0.021797, y=-0.017401, z=0.000000, magXY=0.027891, magXYZ=0.027891, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=3907, x=0.022663, y=-0.018229, z=0.000000, magXY=0.029085, magXYZ=0.029085, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4003, x=0.021876, y=-0.018807, z=0.000000, magXY=0.028849, magXYZ=0.028849, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4099, x=0.020523, y=-0.017026, z=0.000000, magXY=0.026666, magXYZ=0.026666, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4211, x=0.021199, y=-0.019182, z=0.000000, magXY=0.028590, magXYZ=0.028590, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4307, x=0.022931, y=-0.018792, z=0.000000, magXY=0.029647, magXYZ=0.029647, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4403, x=0.021624, y=-0.016807, z=0.000000, magXY=0.027388, magXYZ=0.027388, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4499, x=0.023151, y=-0.018214, z=0.000000, magXY=0.029457, magXYZ=0.029457, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4611, x=0.023340, y=-0.017323, z=0.000000, magXY=0.029066, magXYZ=0.029066, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4707, x=0.022459, y=-0.016995, z=0.000000, magXY=0.028164, magXYZ=0.028164, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4803, x=0.024410, y=-0.018276, z=0.000000, magXY=0.030494, magXYZ=0.030494, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4899, x=0.022915, y=-0.019604, z=0.000000, magXY=0.030157, magXYZ=0.030157, spec=2.500000, exceedsSpec=0
+[23:00:23] [INFO ] sample=4999, x=0.022081, y=-0.019339, z=0.000000, magXY=0.029352, magXYZ=0.029352, spec=2.500000, exceedsSpec=0
+[23:00:25] [INFO ] ========== FINAL STATS ==========
+[23:00:25] [INFO ] deviceReadCalls            = 404
+[23:00:25] [INFO ] emptyReadCount             = 95
+[23:00:25] [INFO ] samplesReceivedFromDevice  = 5012
+[23:00:25] [INFO ] samplesPushedToRawQueue    = 5000
+[23:00:25] [INFO ] samplesPoppedFromRawQueue  = 5000
+[23:00:25] [INFO ] samplesProcessed           = 5000
+[23:00:25] [INFO ] samplesPushedToWriteQueue  = 5000
+[23:00:25] [INFO ] samplesPoppedFromWriteQueue= 5000
+[23:00:25] [INFO ] samplesWrittenToCsv        = 5000
+[23:00:25] [INFO ] displayBucketsProduced     = 50
+[23:00:25] [INFO ] displayBucketsWritten      = 50
+[23:00:25] [INFO ] rawQueueCurrentBatches     = 0
+[23:00:25] [INFO ] rawQueuePeakBatches        = 1
+[23:00:25] [INFO ] writeQueueCurrentBatches   = 0
+[23:00:25] [INFO ] writeQueuePeakBatches      = 1
+[23:00:25] [INFO ] acquisitionThreadStarted   = true
+[23:00:25] [INFO ] acquisitionThreadFinished  = true
+[23:00:25] [INFO ] processingThreadStarted    = true
+[23:00:25] [INFO ] processingThreadFinished   = true
+[23:00:25] [INFO ] writerThreadStarted        = true
+[23:00:25] [INFO ] writerThreadFinished       = true
+[23:00:25] [INFO ] Program finished successfully.
