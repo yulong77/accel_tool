@@ -46,6 +46,11 @@ namespace acceltool
 
         std::atomic<bool> writerThreadStarted{false};
         std::atomic<bool> writerThreadFinished{false};
+
+        std::atomic<std::size_t> samplesWithTickGap{0};
+        std::atomic<std::size_t> totalMissingTicks{0};
+        std::atomic<std::size_t> samplesWithTimestampGap{0};
+
     };
 
     struct WorkerErrorState

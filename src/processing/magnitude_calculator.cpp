@@ -16,7 +16,20 @@ namespace acceltool
 
         out.sampleIndex = sample.sampleIndex;
         out.nodeAddress = sample.nodeAddress;
-        out.timestampSeconds = sample.timestampSeconds;
+        out.hostTimestampSeconds = sample.hostTimestampSeconds;
+
+        out.deviceTick = sample.deviceTick;
+        out.deviceTimestampSec = sample.deviceTimestampSec;
+        out.deviceTimestampNanosec = sample.deviceTimestampNanosec;
+        out.deviceTimestampUnixNs = sample.deviceTimestampUnixNs;
+
+        out.tickGapDetected = sample.tickGapDetected;
+        out.tickGapCount = sample.tickGapCount;
+
+        out.timestampGapDetected = sample.timestampGapDetected;
+        out.timestampGapNs = sample.timestampGapNs;
+        out.expectedTimestampStepNs = sample.expectedTimestampStepNs;
+
 
         out.x = sample.x;
         out.y = sample.y;

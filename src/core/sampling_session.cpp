@@ -159,17 +159,22 @@ namespace acceltool
         logInfo("displayBucketsProduced     = " + std::to_string(stats.displayBucketsProduced.load()));
         logInfo("displayBucketsWritten      = " + std::to_string(stats.displayBucketsWritten.load()));
 
-        logInfo("rawQueueCurrentBatches     = " + std::to_string(rawQueue.size()));
+        // logInfo("rawQueueCurrentBatches     = " + std::to_string(rawQueue.size()));
         logInfo("rawQueuePeakBatches        = " + std::to_string(rawQueue.peakSize()));
-        logInfo("writeQueueCurrentBatches   = " + std::to_string(writeQueue.size()));
+        //logInfo("writeQueueCurrentBatches   = " + std::to_string(writeQueue.size()));
         logInfo("writeQueuePeakBatches      = " + std::to_string(writeQueue.peakSize()));
 
-        logInfo("acquisitionThreadStarted   = " + std::string(stats.acquisitionThreadStarted.load() ? "true" : "false"));
-        logInfo("acquisitionThreadFinished  = " + std::string(stats.acquisitionThreadFinished.load() ? "true" : "false"));
-        logInfo("processingThreadStarted    = " + std::string(stats.processingThreadStarted.load() ? "true" : "false"));
-        logInfo("processingThreadFinished   = " + std::string(stats.processingThreadFinished.load() ? "true" : "false"));
-        logInfo("writerThreadStarted        = " + std::string(stats.writerThreadStarted.load() ? "true" : "false"));
-        logInfo("writerThreadFinished       = " + std::string(stats.writerThreadFinished.load() ? "true" : "false"));
+        // logInfo("acquisitionThreadStarted   = " + std::string(stats.acquisitionThreadStarted.load() ? "true" : "false"));
+        // logInfo("acquisitionThreadFinished  = " + std::string(stats.acquisitionThreadFinished.load() ? "true" : "false"));
+        // logInfo("processingThreadStarted    = " + std::string(stats.processingThreadStarted.load() ? "true" : "false"));
+        // logInfo("processingThreadFinished   = " + std::string(stats.processingThreadFinished.load() ? "true" : "false"));
+        // logInfo("writerThreadStarted        = " + std::string(stats.writerThreadStarted.load() ? "true" : "false"));
+        // logInfo("writerThreadFinished       = " + std::string(stats.writerThreadFinished.load() ? "true" : "false"));
+        
+        logInfo("samplesWithTickGap         = " + std::to_string(stats.samplesWithTickGap.load()));
+        logInfo("totalMissingTicks          = " + std::to_string(stats.totalMissingTicks.load()));
+        logInfo("samplesWithTimestampGap    = " + std::to_string(stats.samplesWithTimestampGap.load()));
+
     }
 
     void SamplingSession::validateFinalStats(
@@ -380,6 +385,18 @@ namespace acceltool
                         const ProcessedSample processed = calculator.process(raw);
                         payload.processedSamples.push_back(processed);
                         ++stats.samplesProcessed;
+
+                        if (processed.tickGapDetected)
+                        {
+                            ++stats.samplesWithTickGap;
+                            stats.totalMissingTicks += processed.tickGapCount;
+                        }
+
+                        if (processed.timestampGapDetected)
+                        {
+                            ++stats.samplesWithTimestampGap;
+                        }
+
 
                         auto bucketOpt = aggregator.consume(processed);
                         if (bucketOpt.has_value())

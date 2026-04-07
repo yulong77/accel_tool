@@ -65,6 +65,83 @@ namespace acceltool
         return std::chrono::duration<double>(dt).count();
     }
 
+    std::uint64_t WirelessAccelerometerManager::expectedSamplePeriodNs() const
+    {
+        if (m_config.sampleRateHz == 0)
+        {
+            return 0;
+        }
+
+        return mscl::TimeSpan::NANOSECONDS_PER_SECOND / m_config.sampleRateHz;
+    }
+
+    void WirelessAccelerometerManager::populateTimingAndLossFields(
+        const mscl::DataSweep& sweep,
+        RawSample& sample)
+    {
+        const mscl::Timestamp& ts = sweep.timestamp();
+
+        const std::uint64_t deviceUnixNs = ts.nanoseconds(mscl::Timestamp::UNIX);
+        const std::uint64_t deviceSec = ts.seconds(mscl::Timestamp::UNIX);
+        const std::uint32_t deviceSubNs = static_cast<std::uint32_t>(
+            deviceUnixNs % mscl::TimeSpan::NANOSECONDS_PER_SECOND);
+
+        sample.deviceTick = sweep.tick();
+        sample.deviceTimestampSec = deviceSec;
+        sample.deviceTimestampNanosec = deviceSubNs;
+        sample.deviceTimestampUnixNs = deviceUnixNs;
+        sample.expectedTimestampStepNs = expectedSamplePeriodNs();
+
+        sample.tickGapDetected = false;
+        sample.tickGapCount = 0;
+        sample.timestampGapDetected = false;
+        sample.timestampGapNs = 0;
+
+        if (m_hasPreviousSweepMeta)
+        {
+            const std::uint32_t expectedTick = m_previousDeviceTick + 1;
+
+            if (sample.deviceTick != expectedTick)
+            {
+                sample.tickGapDetected = true;
+
+                if (sample.deviceTick > expectedTick)
+                {
+                    sample.tickGapCount = sample.deviceTick - expectedTick;
+                }
+                else
+                {
+                    // Sync packet parser currently reads tick as uint16, so handle wraparound as 16-bit.
+                    sample.tickGapCount =
+                        static_cast<std::uint32_t>((0x10000u - expectedTick) + sample.deviceTick);
+                }
+            }
+
+            sample.timestampGapNs = static_cast<std::int64_t>(
+                sample.deviceTimestampUnixNs - m_previousDeviceTimestampUnixNs);
+
+            if (sample.expectedTimestampStepNs > 0)
+            {
+                const std::int64_t expectedStep =
+                    static_cast<std::int64_t>(sample.expectedTimestampStepNs);
+
+                const std::int64_t delta = sample.timestampGapNs - expectedStep;
+
+                // First version: mark anomaly if actual step differs by more than half a sample period.
+                if (delta > expectedStep / 2 || delta < -(expectedStep / 2))
+                {
+                    sample.timestampGapDetected = true;
+                }
+            }
+        }
+
+        m_previousDeviceTick = sample.deviceTick;
+        m_previousDeviceTimestampUnixNs = sample.deviceTimestampUnixNs;
+        m_hasPreviousSweepMeta = true;
+    }
+
+
+
     mscl::WirelessTypes::WirelessSampleRate
     WirelessAccelerometerManager::toMsclSampleRate(std::uint32_t hz) const
     {
@@ -250,6 +327,10 @@ namespace acceltool
     
         m_sampleCounter = 0;
         m_dumpedChannels = false;
+
+        m_hasPreviousSweepMeta = false;
+        m_previousDeviceTick = 0;
+        m_previousDeviceTimestampUnixNs = 0;
     
         waitForNodeToStabilize(10, 300);
     
@@ -663,9 +744,10 @@ namespace acceltool
         RawSample sample{};
         sample.sampleIndex = m_sampleCounter;
         sample.nodeAddress = sweep.nodeAddress();
-        sample.timestampSeconds = nowSeconds();
+        sample.hostTimestampSeconds = nowSeconds();
         sample.baseRssi = sweep.baseRssi();
         sample.nodeRssi = sweep.nodeRssi();
+
 
         for (const mscl::WirelessDataPoint& dp : sweep.data())
         {
@@ -697,6 +779,8 @@ namespace acceltool
         {
             return false;
         }
+
+        populateTimingAndLossFields(sweep, sample);
 
         out = sample;
         ++m_sampleCounter;

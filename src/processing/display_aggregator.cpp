@@ -22,8 +22,8 @@ namespace acceltool
             m_current.bucketIndex = m_bucketIndex;
             m_current.startSampleIndex = sample.sampleIndex;
             m_current.endSampleIndex = sample.sampleIndex;
-            m_current.startTimestampSeconds = sample.timestampSeconds;
-            m_current.endTimestampSeconds = sample.timestampSeconds;
+            m_current.startTimestampSeconds = sample.hostTimestampSeconds;
+            m_current.endTimestampSeconds = sample.hostTimestampSeconds;
             m_current.sampleCount = 1;
             m_current.maxMagnitudeXY = sample.magnitudeXY;
             m_current.maxMagnitudeXYZ = sample.magnitudeXYZ;
@@ -32,7 +32,7 @@ namespace acceltool
         else
         {
             m_current.endSampleIndex = sample.sampleIndex;
-            m_current.endTimestampSeconds = sample.timestampSeconds;
+            m_current.endTimestampSeconds = sample.hostTimestampSeconds;
             ++m_current.sampleCount;
             m_current.maxMagnitudeXY = std::max(m_current.maxMagnitudeXY, sample.magnitudeXY);
             m_current.maxMagnitudeXYZ = std::max(m_current.maxMagnitudeXYZ, sample.magnitudeXYZ);

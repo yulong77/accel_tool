@@ -11,7 +11,20 @@ namespace acceltool
         std::uint64_t sampleIndex = 0;
         int nodeAddress = 0;
 
-        double timestampSeconds = 0.0;
+        double hostTimestampSeconds = 0.0;
+
+        std::uint32_t deviceTick = 0;
+
+        std::uint64_t deviceTimestampSec = 0;
+        std::uint32_t deviceTimestampNanosec = 0;
+        std::uint64_t deviceTimestampUnixNs = 0;
+
+        bool tickGapDetected = false;
+        std::uint32_t tickGapCount = 0;
+
+        bool timestampGapDetected = false;
+        std::int64_t timestampGapNs = 0;
+        std::uint64_t expectedTimestampStepNs = 0;
 
         double x = 0.0;
         double y = 0.0;
@@ -30,7 +43,20 @@ namespace acceltool
         std::uint64_t sampleIndex = 0;
         int nodeAddress = 0;
 
-        double timestampSeconds = 0.0;
+        double hostTimestampSeconds = 0.0;
+
+        std::uint32_t deviceTick = 0;
+
+        std::uint64_t deviceTimestampSec = 0;
+        std::uint32_t deviceTimestampNanosec = 0;
+        std::uint64_t deviceTimestampUnixNs = 0;
+
+        bool tickGapDetected = false;
+        std::uint32_t tickGapCount = 0;
+
+        bool timestampGapDetected = false;
+        std::int64_t timestampGapNs = 0;
+        std::uint64_t expectedTimestampStepNs = 0;
 
         double x = 0.0;
         double y = 0.0;

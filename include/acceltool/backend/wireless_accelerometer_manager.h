@@ -61,6 +61,10 @@ namespace acceltool
         bool tryConvertSweepToRawSample(const mscl::DataSweep& sweep, RawSample& out);
         void dumpSweepChannels(const mscl::DataSweep& sweep) const;
 
+        void populateTimingAndLossFields(const mscl::DataSweep& sweep, RawSample& sample);
+        std::uint64_t expectedSamplePeriodNs() const;
+
+
         mscl::WirelessTypes::WirelessSampleRate toMsclSampleRate(std::uint32_t hz) const;
 
         static double nowSeconds();
@@ -73,6 +77,11 @@ namespace acceltool
         bool m_dumpedChannels = false;
 
         std::uint64_t m_sampleCounter = 0;
+
+        bool m_hasPreviousSweepMeta = false;
+        std::uint32_t m_previousDeviceTick = 0;
+        std::uint64_t m_previousDeviceTimestampUnixNs = 0;
+
 
         ConfigApplyReport m_configReport{};
 
