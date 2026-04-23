@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 #include <mscl/stdafx.h>
 #include <mscl/MicroStrain/Wireless/BaseStation.h>
@@ -26,6 +27,8 @@ namespace acceltool
 
         void connect(const AppConfig& config);
         void initialize(bool forceSetToIdleNow = false);
+        bool recoverWithRfSweepPrompt();
+        void setToIdle();
         void startSampling();
         void stopSampling();
 
@@ -33,12 +36,32 @@ namespace acceltool
 
         bool isConnected() const noexcept;
         int nodeAddress() const noexcept;
+        const AppConfig& currentConfig() const noexcept;
         const ConfigApplyReport& configApplyReport() const noexcept;
 
     private:
         void pingNode();
         bool tryPingNode();
+        
+        bool connectToBaseStationPort(const std::string& port);
+        bool scanAndConnectBaseStation();
+        bool isAutoPort(const std::string& port) const;
+        
+        void ensureNodeReady();
+        void ensureNodeReachable();
+        bool scanForNodeFrequency();
+        
+        bool discoverNodeOnConfiguredFrequency();
+        bool scanFrequenciesForNodeDiscovery();
+        bool collectNodeDiscoveryOnCurrentFrequency(int listenSeconds = 3);
+        bool confirmUseNode(int nodeAddress, std::uint32_t frequency) const;
+        bool selectDiscoveredNode(const mscl::NodeDiscoveries& discoveries);
+
+        
+        mscl::WirelessTypes::Frequency toMsclFrequency(std::uint32_t frequency) const;
+        
         void setNodeToIdle();
+
         void printCurrentConfig();
         void optionallyApplyConfig();
         void buildAndStartSyncNetwork();

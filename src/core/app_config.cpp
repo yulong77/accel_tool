@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 namespace acceltool
 {
@@ -123,10 +124,37 @@ namespace acceltool
                 {
                     config.baudrate = static_cast<std::uint32_t>(std::stoul(value));
                 }
+                else if (key == "autoFindComPort")
+                {
+                    bool b = false;
+                    if (!parseBool(value, b))
+                        throw std::runtime_error("invalid bool");
+                    config.autoFindComPort = b;
+                }
                 else if (key == "nodeAddress")
                 {
-                    config.nodeAddress = std::stoi(value);
+                    const std::string v = toLower(trim(value));
+                    if (v == "auto")
+                    {
+                        config.nodeAddress = 0;
+                    }
+                    else
+                    {
+                        config.nodeAddress = std::stoi(value);
+                    }
                 }
+                else if (key == "autoFindNodeAddress")
+                {
+                    bool b = false;
+                    if (!parseBool(value, b))
+                        throw std::runtime_error("invalid bool");
+                    config.autoFindNodeAddress = b;
+                }
+                else if (key == "frequency")
+                {
+                    config.frequency = static_cast<std::uint32_t>(std::stoul(value));
+                }
+
                 else if (key == "forceSetToIdle")
                 {
                     bool b = false;
@@ -155,10 +183,18 @@ namespace acceltool
                         throw std::runtime_error("invalid bool");
                     config.useLxrsPlus = b;
                 }
+                else if (key == "autoFindNodeFrequency")
+                {
+                    bool b = false;
+                    if (!parseBool(value, b))
+                        throw std::runtime_error("invalid bool");
+                    config.autoFindNodeFrequency = b;
+                }
                 else if (key == "sampleRateHz")
                 {
                     config.sampleRateHz = static_cast<std::uint32_t>(std::stoul(value));
                 }
+
                 else if (key == "timestampGapTolerancePercent")
                 {
                     config.timestampGapTolerancePercent = std::stod(value);
@@ -253,6 +289,77 @@ namespace acceltool
         return true;
     }
 
+    bool saveNodeSelectionToConfigFile(
+        const std::string& path,
+        int nodeAddress,
+        std::uint32_t frequency,
+        std::string& errorMessage)
+    {
+        std::ifstream in(path);
+        if (!in)
+        {
+            errorMessage = "Failed to open config file for reading: " + path;
+            return false;
+        }
+    
+        std::vector<std::string> lines;
+        std::string line;
+        bool wroteNodeAddress = false;
+        bool wroteFrequency = false;
+    
+        while (std::getline(in, line))
+        {
+            const std::string trimmed = trim(line);
+    
+            if (!trimmed.empty() && trimmed[0] != '#' && trimmed[0] != ';')
+            {
+                const std::size_t eqPos = trimmed.find('=');
+                if (eqPos != std::string::npos)
+                {
+                    const std::string key = trim(trimmed.substr(0, eqPos));
+    
+                    if (key == "nodeAddress")
+                    {
+                        line = "nodeAddress=" + std::to_string(nodeAddress);
+                        wroteNodeAddress = true;
+                    }
+                    else if (key == "frequency")
+                    {
+                        line = "frequency=" + std::to_string(frequency);
+                        wroteFrequency = true;
+                    }
+                }
+            }
+    
+            lines.push_back(line);
+        }
+    
+        if (!wroteNodeAddress)
+        {
+            lines.push_back("nodeAddress=" + std::to_string(nodeAddress));
+        }
+    
+        if (!wroteFrequency)
+        {
+            lines.push_back("frequency=" + std::to_string(frequency));
+        }
+    
+        std::ofstream out(path, std::ios::trunc);
+        if (!out)
+        {
+            errorMessage = "Failed to open config file for writing: " + path;
+            return false;
+        }
+    
+        for (const std::string& outputLine : lines)
+        {
+            out << outputLine << '\n';
+        }
+    
+        return true;
+    }
+
+
     bool validateConfig(const AppConfig& config, std::string& errorMessage)
     {
         std::ostringstream oss;
@@ -261,7 +368,7 @@ namespace acceltool
         if (config.port.empty())
         {
             ok = false;
-            oss << "- port is required\n";
+            oss << "- port is required, or set port=auto\n";
         }
 
         if (config.baudrate == 0)
@@ -270,10 +377,10 @@ namespace acceltool
             oss << "- baudrate is required and must be > 0\n";
         }
 
-        if (config.nodeAddress <= 0)
+        if (config.nodeAddress <= 0 && !config.autoFindNodeAddress)
         {
             ok = false;
-            oss << "- nodeAddress is required and must be > 0\n";
+            oss << "- nodeAddress must be > 0 unless autoFindNodeAddress=true\n";
         }
 
         if (!config.useSyncSampling)
@@ -288,6 +395,12 @@ namespace acceltool
         {
             ok = false;
             oss << "- sampleRateHz must be one of: 1024, 2048, 4096\n";
+        }
+
+        if (config.frequency != 0 && (config.frequency < 11 || config.frequency > 26))
+        {
+            ok = false;
+            oss << "- frequency must be 0 or in range 11-26\n";
         }
 
         if (config.timestampGapTolerancePercent <= 0.0)

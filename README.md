@@ -5,23 +5,23 @@ C++ tool for working with MicroStrain accelerometers using the MSCL library. Bui
 ## Project Structure
 ```bash
 AccelTool
-├─ CMakeLists.txt
-├─ README.md
-├─ src/ # application source code
-│ └─ main.cpp
-├─ include/ # project headers
-├─ config/ # configuration files
-├─ third_party/ # third-party libraries
-│ └─ mscl/
-│ ├─ include/
-│ │ ├─ mscl/
-│ │ ├─ boost/
-│ │ └─ openssl/
-│ ├─ lib/
-│ │ └─ MSCL.lib
-│ └─ bin/
-│ └─ MSCL.dll
-└─ build/ # build output (generated)
+|-- CMakeLists.txt
+|-- README.md
+|-- src/          # application source code
+|   `-- main.cpp
+|-- include/      # project headers
+|-- config/       # configuration files
+|-- third_party/  # third-party libraries
+|   `-- mscl/
+|       |-- include/
+|       |   |-- mscl/
+|       |   |-- boost/
+|       |   `-- openssl/
+|       |-- lib/
+|       |   `-- MSCL.lib
+|       `-- bin/
+|           `-- MSCL.dll
+`-- build/        # build output (generated)
 ```
 
 ## Structure
@@ -43,7 +43,7 @@ MSCL Acquisition Thread
 
 ## Requirements
 Visual Studio Build Tools (MSVC)  
-CMake ≥ 3.20  
+CMake >= 3.20  
 Ninja
 
 ## Build
@@ -88,95 +88,155 @@ AccelTool interactive mode
   Q = Quit
 ```
 
-
 ## CSV Output Fields
 
-`accel_data.csv` contains one processed sample per row.
+The application writes two CSV files:
 
-### `sample_index`
+- `accel_data.csv`: one processed accepted sample per row.
+- `display_data.csv`: one display aggregation bucket per row.
+
+### `accel_data.csv`
+
+Header:
+
+```csv
+sample_index,node_address,device_tick,tick_gap_detected,tick_gap_count,device_timestamp_unix_ns,timestamp_gap_ns,timestamp_gap_detected,x,y,z,magnitude_xy,magnitude_xyz,norm_Lat_G,applied_spec,exceeds_spec
+```
+
+#### `sample_index`
 Monotonic sample number assigned by this application after a sweep is accepted as a valid sample.
 
-### `node_address`
+#### `node_address`
 Wireless node address reported by the device.
 
-### `host_timestamp_sec`
-Local monotonic timestamp, in seconds, recorded by this application when the sample was accepted.  
-This is a host-side timing reference, not the device's own timestamp.
-
-### `device_tick`
+#### `device_tick`
 Sweep tick reported by MSCL from the wireless sync sampling packet.  
 This is the primary sequence indicator used for data loss detection.
 
-### `device_timestamp_sec`
-Whole seconds part of the device timestamp, converted to Unix time.
-
-### `device_timestamp_nanosec`
-Sub-second nanoseconds part of the device timestamp.  
-This is the remainder after splitting `device_timestamp_unix_ns` into seconds and nanoseconds.
-
-### `device_timestamp_unix_ns`
-Full device timestamp in Unix epoch nanoseconds.  
-This is the main absolute device-side time value.
-
-### `expected_timestamp_step_ns`
-Expected interval between adjacent samples, in nanoseconds, derived from the configured sample rate.  
-For example, at `2048 Hz` this is approximately `488281 ns`.
-
-### `timestamp_gap_ns`
-Observed difference, in nanoseconds, between this sample's device timestamp and the previous accepted sample's device timestamp.
-
-### `timestamp_gap_detected`
-Timestamp interval anomaly flag.  
-`1` means the observed `timestamp_gap_ns` falls outside the theoretical sampling interval derived from the configured sample rate with a timestampGapTolerancePercent in the `.ini` file. tolerance.  
-This is a per-sample timing consistency check and is separate from the primary tick-based loss indicator.
-
-
-### `tick_gap_detected`
+#### `tick_gap_detected`
 Primary data loss flag.  
 `1` means the current `device_tick` is not the expected next tick after the previous accepted sample.
 
-### `tick_gap_count`
+#### `tick_gap_count`
 Estimated number of missing ticks between the previous accepted sample and the current sample.  
 `0` means no tick gap was detected.
 
-### `x`
+#### `device_timestamp_unix_ns`
+Full device timestamp in Unix epoch nanoseconds.  
+This timestamp comes from the MSCL `DataSweep` device timestamp.
+
+#### `timestamp_gap_ns`
+Observed difference, in nanoseconds, between this sample's device timestamp and the previous accepted sample's device timestamp.
+
+#### `timestamp_gap_detected`
+Timestamp interval anomaly flag.  
+`1` means `timestamp_gap_ns` falls outside the expected sample interval derived from `sampleRateHz`, using `timestampGapTolerancePercent` from the `.ini` file.
+
+This is a secondary timing diagnostic. The primary loss indicator is still `tick_gap_detected`.
+
+#### `x`
 Acceleration value for the X axis.
 
-### `y`
+#### `y`
 Acceleration value for the Y axis.
 
-### `z`
+#### `z`
 Acceleration value for the Z axis.
 
-### `magnitude_xy`
+#### `magnitude_xy`
 Vector magnitude computed from X and Y:
 
-`sqrt(x*x + y*y)`
+```text
+sqrt(x*x + y*y)
+```
 
-### `magnitude_xyz`
+#### `magnitude_xyz`
 Vector magnitude computed from X, Y, and Z:
 
-`sqrt(x*x + y*y + z*z)`
+```text
+sqrt(x*x + y*y + z*z)
+```
 
-### `applied_spec`
-Configured spec threshold used for exceedance checking.
+#### `norm_Lat_G`
+Normalized lateral acceleration value computed as:
 
-### `exceeds_spec`
+```text
+magnitude_xy / z
+```
+
+If `z` is `0`, this field is written as `0`.
+
+#### `applied_spec`
+Configured spec threshold from the `.ini` file.
+
+#### `exceeds_spec`
 Spec exceedance flag.  
-`1` means the selected magnitude exceeded `applied_spec`, otherwise `0`.
+`1` means the selected magnitude exceeded `applied_spec`.
+
+The selected magnitude depends on `axisMode`:
+
+- `XY`: compares `magnitude_xy` against `applied_spec`.
+- `XYZ`: compares `magnitude_xyz` against `applied_spec`.
+
+### `display_data.csv`
+
+Header:
+
+```csv
+bucket_index,start_sample_index,end_sample_index,start_device_timestamp_unix_ns,end_device_timestamp_unix_ns,sample_count,peak_x,peak_y,peak_z,max_magnitude_xy,max_magnitude_xyz,max_norm_Lat_G
+```
+
+#### `bucket_index`
+Monotonic display bucket number assigned by the application.
+
+#### `start_sample_index`
+First `sample_index` included in this display bucket.
+
+#### `end_sample_index`
+Last `sample_index` included in this display bucket.
+
+#### `start_device_timestamp_unix_ns`
+Device timestamp, in Unix epoch nanoseconds, for the first sample in the bucket.
+
+#### `end_device_timestamp_unix_ns`
+Device timestamp, in Unix epoch nanoseconds, for the last sample in the bucket.
+
+#### `sample_count`
+Number of accepted processed samples included in the bucket.
+
+This is normally controlled by `displayAggregationSamples` in the `.ini` file.  
+The final flushed bucket may contain fewer samples.
+
+#### `peak_x`
+Signed X value with the largest absolute value in the bucket.
+
+#### `peak_y`
+Signed Y value with the largest absolute value in the bucket.
+
+#### `peak_z`
+Signed Z value with the largest absolute value in the bucket.
+
+#### `max_magnitude_xy`
+Maximum `magnitude_xy` value in the bucket.
+
+#### `max_magnitude_xyz`
+Maximum `magnitude_xyz` value in the bucket.
+
+#### `max_norm_Lat_G`
+Maximum `norm_Lat_G` value in the bucket.
 
 ## Notes On Timing And Loss Detection
 
-### Host timestamp vs device timestamp
-`host_timestamp_sec` is measured locally by the PC application.  
-`device_timestamp_sec`, `device_timestamp_nanosec`, and `device_timestamp_unix_ns` come from the device timestamp parsed by MSCL.
+### Device timestamp
+`device_timestamp_unix_ns` comes from the device timestamp parsed by MSCL.  
+The current CSV output does not include a host-side timestamp column.
 
 ### Primary loss indicator
 `tick_gap_detected` and `tick_gap_count` are the main fields for identifying possible data loss.
 
 ### Secondary timing diagnostic
 `timestamp_gap_ns` and `timestamp_gap_detected` provide a per-sample timing consistency check.  
-The expected interval is derived from the configured sample rate, and `timestamp_gap_detected` is set when the observed gap falls outside the theoretical `±0.2%` tolerance range.
+The expected interval is derived from the configured `sampleRateHz`, and the allowed tolerance is controlled by `timestampGapTolerancePercent`.
 
 ### Accepted samples only
-These fields are recorded only for sweeps that passed channel validation and were accepted as valid samples by the application.
+CSV rows are written only for sweeps that passed channel validation and were accepted as valid samples by the application.

@@ -17,15 +17,19 @@ namespace acceltool
         // Wireless base station
         std::string port;
         std::uint32_t baudrate = 0;
-
+        bool autoFindComPort = true;
+        
         // Wireless node
         int nodeAddress = 0;
-
+        bool autoFindNodeAddress = true;
+        std::uint32_t frequency = 0;
+        
         // Sampling / startup
         bool forceSetToIdle = false;
         bool configureNode = false;
         bool useSyncSampling = false;
         bool useLxrsPlus = false;
+        bool autoFindNodeFrequency = true;
         std::uint32_t sampleRateHz = 0;
         double timestampGapTolerancePercent = 0.2;
         std::uint32_t inactivityTimeoutSeconds = 0;
@@ -56,5 +60,12 @@ namespace acceltool
     };
 
     bool loadConfigFromFile(const std::string& path, AppConfig& config, std::string& errorMessage);
+
+    bool saveNodeSelectionToConfigFile(
+        const std::string& path,
+        int nodeAddress,
+        std::uint32_t frequency,
+        std::string& errorMessage);
+    
     bool validateConfig(const AppConfig& config, std::string& errorMessage);
 }

@@ -9,6 +9,12 @@
 #include <string>
 #include <thread>
 #include <sstream>
+#include <algorithm>
+#include <limits>
+#include <map>
+
+#include <mscl/Communication/Devices.h>
+
 
 namespace acceltool
 {
@@ -53,6 +59,38 @@ namespace acceltool
         {
             return containsIgnoreCase(name, "ch3") ||
                    containsIgnoreCase(name, "channel 3");
+        }
+
+        struct RfSweepFrequencyCandidate
+        {
+            std::uint32_t frequency = 0;
+            int strongestRssi = -32768;
+            mscl::NodeDiscoveries discoveries;
+        };
+        
+        int rfSweepKeyToFrequencyChannel(std::uint32_t key)
+        {
+            if (key >= 11 && key <= 26)
+            {
+                return static_cast<int>(key);
+            }
+        
+            if (key >= 2405 && key <= 2480 && ((key - 2405) % 5 == 0))
+            {
+                return 11 + static_cast<int>((key - 2405) / 5);
+            }
+        
+            if (key >= 2405000 && key <= 2480000 && (((key / 1000) - 2405) % 5 == 0))
+            {
+                return 11 + static_cast<int>(((key / 1000) - 2405) / 5);
+            }
+        
+            if (key >= 2405000000u && key <= 2480000000u && (((key / 1000000u) - 2405) % 5 == 0))
+            {
+                return 11 + static_cast<int>(((key / 1000000u) - 2405) / 5);
+            }
+        
+            return 0;
         }
     }
 
@@ -277,25 +315,116 @@ namespace acceltool
     void WirelessAccelerometerManager::connect(const AppConfig& config)
     {
         m_config = config;
-
-        m_connection = std::make_unique<mscl::Connection>(
-            mscl::Connection::Serial(m_config.port, m_config.baudrate));
-
-        m_baseStation = std::make_unique<mscl::BaseStation>(*m_connection);
-        m_baseStation->readWriteRetries(3);
-
-        m_node = std::make_unique<mscl::WirelessNode>(m_config.nodeAddress, *m_baseStation);
-        m_node->readWriteRetries(3);
-
+    
+        m_connected = false;
+        m_samplingStarted = false;
+        m_network.reset();
+        m_node.reset();
+        m_baseStation.reset();
+        m_connection.reset();
+    
+        bool connected = false;
+    
+        if (!isAutoPort(m_config.port))
+        {
+            std::cout << "Trying configured base station port: "
+                      << m_config.port << "...\n";
+    
+            connected = connectToBaseStationPort(m_config.port);
+    
+            if (!connected)
+            {
+                std::cout << "Configured base station port failed.\n";
+            }
+        }
+    
+        if (!connected && m_config.autoFindComPort)
+        {
+            connected = scanAndConnectBaseStation();
+        }
+    
+        if (!connected)
+        {
+            throw std::runtime_error(
+                "Failed to connect to a MicroStrain base station. Check COM port, USB connection, and baudrate.");
+        }
+    
         m_connected = true;
     }
 
+    bool WirelessAccelerometerManager::isAutoPort(const std::string& port) const
+    {
+        return port.empty() || containsIgnoreCase(port, "auto");
+    }
+    
+    bool WirelessAccelerometerManager::connectToBaseStationPort(const std::string& port)
+    {
+        try
+        {
+            auto connection = std::make_unique<mscl::Connection>(
+                mscl::Connection::Serial(port, m_config.baudrate));
+    
+            auto baseStation = std::make_unique<mscl::BaseStation>(*connection);
+            baseStation->readWriteRetries(1);
+    
+            if (!baseStation->ping())
+            {
+                return false;
+            }
+    
+            m_connection = std::move(connection);
+            m_baseStation = std::move(baseStation);
+    
+            std::cout << "Connected to base station on " << port << ".\n";
+    
+            return true;
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "  Port " << port << " failed: "
+                      << e.what() << '\n';
+            return false;
+        }
+    }
+    
+    bool WirelessAccelerometerManager::scanAndConnectBaseStation()
+    {
+        std::cout << "Scanning for MicroStrain base station COM port...\n";
+    
+        mscl::Devices::DeviceList candidates = mscl::Devices::listBaseStations();
+    
+        if (candidates.empty())
+        {
+            std::cout << "No base stations found by listBaseStations(); scanning all serial ports...\n";
+            candidates = mscl::Devices::listPorts();
+        }
+    
+        for (const auto& candidate : candidates)
+        {
+            const std::string& port = candidate.first;
+    
+            std::cout << "Trying candidate port " << port
+                      << " (" << candidate.second.description() << ")...\n";
+    
+            if (connectToBaseStationPort(port))
+            {
+                m_config.port = port;
+                return true;
+            }
+        }
+    
+        return false;
+    }
+
+
     void WirelessAccelerometerManager::initialize(bool forceSetToIdleNow)
     {
-        if (!m_connected || !m_node)
+        if (!m_connected || !m_baseStation)
         {
             throw std::runtime_error("WirelessAccelerometerManager not connected.");
         }
+    
+        ensureNodeReady();
     
         if (forceSetToIdleNow || m_config.forceSetToIdle)
         {
@@ -314,6 +443,22 @@ namespace acceltool
         m_configReport.before = readCurrentNodeConfigSnapshot();
 
         optionallyApplyConfig();
+    }
+
+    void WirelessAccelerometerManager::setToIdle()
+    {
+        if (!m_connected || !m_baseStation)
+        {
+            throw std::runtime_error("WirelessAccelerometerManager not connected.");
+        }
+    
+        if (!m_node)
+        {
+            ensureNodeReady();
+        }
+    
+        setNodeToIdle();
+        m_samplingStarted = false;
     }
 
     void WirelessAccelerometerManager::startSampling()
@@ -401,6 +546,11 @@ namespace acceltool
         return m_config.nodeAddress;
     }
 
+    const AppConfig& WirelessAccelerometerManager::currentConfig() const noexcept
+    {
+        return m_config;
+    }
+
     const ConfigApplyReport& WirelessAccelerometerManager::configApplyReport() const noexcept
     {
         return m_configReport;
@@ -413,7 +563,7 @@ namespace acceltool
         if (!response.success())
         {
             throw std::runtime_error(
-                "Failed to ping wireless node. Check power, range, frequency, LXRS/LXRS+, and node address.");
+                "Failed to ping wireless node. Check power, range, RF frequency, LXRS+ mode, and node address.");
         }
 
         std::cout << "Successfully pinged Node " << m_node->nodeAddress() << '\n';
@@ -436,6 +586,776 @@ namespace acceltool
             return false;
         }
     }
+
+    bool WirelessAccelerometerManager::recoverWithRfSweepPrompt()
+    {
+        if (!m_baseStation)
+        {
+            throw std::runtime_error("Base station is not connected.");
+        }
+    
+        while (true)
+        {
+            std::cout << "\nRecovery options:\n"
+                      << "  D = Listen for NodeDiscovery again on RF "
+                      << m_config.frequency << "\n"
+                      << "  R = Scan RF signal strength 11..26\n"
+                      << "  N = Manually enter nodeAddress\n"
+                      << "  Q = Quit\n"
+                      << "\nEnter choice [D/R/N/Q]: ";
+            std::cout.flush();
+    
+            std::string line;
+            std::getline(std::cin, line);
+    
+            if (line.empty())
+            {
+                continue;
+            }
+    
+            const char command =
+                static_cast<char>(std::toupper(static_cast<unsigned char>(line[0])));
+    
+            if (command == 'Q')
+            {
+                return false;
+            }
+    
+            if (command == 'D')
+            {
+                if (discoverNodeOnConfiguredFrequency())
+                {
+                    return true;
+                }
+    
+                std::cout << "No nodeAddress was discovered on RF "
+                          << m_config.frequency << ".\n";
+                continue;
+            }
+    
+            if (command == 'N')
+            {
+                std::cout << "Enter nodeAddress to try on RF "
+                          << m_config.frequency << ": ";
+                std::cout.flush();
+    
+                std::getline(std::cin, line);
+    
+                int address = 0;
+                try
+                {
+                    address = std::stoi(line);
+                }
+                catch (...)
+                {
+                    std::cout << "Invalid nodeAddress.\n";
+                    continue;
+                }
+    
+                if (address <= 0)
+                {
+                    std::cout << "Invalid nodeAddress.\n";
+                    continue;
+                }
+    
+                m_config.nodeAddress = address;
+    
+                m_node = std::make_unique<mscl::WirelessNode>(
+                    m_config.nodeAddress,
+                    *m_baseStation);
+                m_node->readWriteRetries(3);
+    
+                if (tryPingNode())
+                {
+                    std::cout << "Node " << m_config.nodeAddress
+                              << " responded on RF " << m_config.frequency << ".\n";
+                    return true;
+                }
+    
+                std::cout << "Node " << m_config.nodeAddress
+                          << " did not respond on RF " << m_config.frequency << ".\n";
+                m_node.reset();
+                m_config.nodeAddress = 0;
+                continue;
+            }
+    
+            if (command != 'R')
+            {
+                std::cout << "Unknown choice. Use D, R, N, or Q.\n";
+                continue;
+            }
+    
+            std::cout << "\nScanning RF signal strength...\n";
+    
+            std::map<std::uint32_t, RfSweepFrequencyCandidate> byFrequency;
+    
+            try
+            {
+                (void)m_baseStation->getNodeDiscoveries();
+    
+                m_baseStation->startRfSweepMode();
+                std::this_thread::sleep_for(std::chrono::seconds(3));
+    
+                const mscl::DataSweeps sweeps = m_baseStation->getData(3000);
+                const mscl::NodeDiscoveries discoveries =
+                    m_baseStation->getNodeDiscoveries();
+    
+                try
+                {
+                    (void)m_baseStation->ping();
+                }
+                catch (...)
+                {
+                }
+    
+                for (const mscl::DataSweep& sweep : sweeps)
+                {
+                    if (sweep.samplingType() != mscl::DataSweep::samplingType_RfSweep)
+                    {
+                        continue;
+                    }
+    
+                    for (const mscl::WirelessDataPoint& dp : sweep.data())
+                    {
+                        if (dp.channelId() != mscl::WirelessChannel::channel_rfSweep)
+                        {
+                            continue;
+                        }
+    
+                        const mscl::RfSweep rfSweep = dp.as_RfSweep();
+    
+                        for (const auto& item : rfSweep)
+                        {
+                            const int frequency =
+                                rfSweepKeyToFrequencyChannel(item.first);
+    
+                            if (frequency < 11 || frequency > 26)
+                            {
+                                continue;
+                            }
+    
+                            auto& candidate =
+                                byFrequency[static_cast<std::uint32_t>(frequency)];
+    
+                            candidate.frequency =
+                                static_cast<std::uint32_t>(frequency);
+    
+                            candidate.strongestRssi =
+                                std::max(candidate.strongestRssi,
+                                         static_cast<int>(item.second));
+                        }
+                    }
+                }
+    
+                for (const mscl::NodeDiscovery& discovery : discoveries)
+                {
+                    const std::uint32_t frequency =
+                        static_cast<std::uint32_t>(discovery.frequency());
+    
+                    if (frequency < 11 || frequency > 26)
+                    {
+                        continue;
+                    }
+    
+                    auto& candidate = byFrequency[frequency];
+                    candidate.frequency = frequency;
+                    candidate.strongestRssi =
+                        std::max(candidate.strongestRssi,
+                                 static_cast<int>(discovery.baseRssi()));
+                    candidate.discoveries.push_back(discovery);
+                }
+            }
+            catch (const std::exception& e)
+            {
+                try
+                {
+                    (void)m_baseStation->ping();
+                }
+                catch (...)
+                {
+                }
+    
+                std::cout << "RF sweep failed: " << e.what() << '\n';
+                continue;
+            }
+    
+            std::vector<RfSweepFrequencyCandidate> candidates;
+    
+            for (const auto& item : byFrequency)
+            {
+                candidates.push_back(item.second);
+            }
+    
+            std::sort(
+                candidates.begin(),
+                candidates.end(),
+                [](const RfSweepFrequencyCandidate& a,
+                   const RfSweepFrequencyCandidate& b)
+                {
+                    return a.strongestRssi > b.strongestRssi;
+                });
+    
+            if (candidates.empty())
+            {
+                std::cout << "No RF signal was detected on frequencies 11 through 26.\n";
+                continue;
+            }
+    
+            std::cout << "\nRF frequencies by strongest signal:\n";
+    
+            for (std::size_t i = 0; i < candidates.size(); ++i)
+            {
+                const auto& candidate = candidates[i];
+    
+                std::cout << "  " << (i + 1)
+                          << ") RF " << candidate.frequency
+                          << ", RSSI " << candidate.strongestRssi;
+    
+                if (!candidate.discoveries.empty())
+                {
+                    std::cout << ", discovered nodeAddress:";
+                    for (const mscl::NodeDiscovery& discovery : candidate.discoveries)
+                    {
+                        std::cout << ' ' << discovery.nodeAddress();
+                    }
+                }
+                else
+                {
+                    std::cout << ", no nodeAddress discovered";
+                }
+    
+                std::cout << '\n';
+            }
+    
+            std::cout << "\nChoose a frequency number to use, R to rescan, or Q to quit: ";
+            std::cout.flush();
+    
+            std::getline(std::cin, line);
+    
+            if (line.empty())
+            {
+                continue;
+            }
+    
+            const char nextCommand =
+                static_cast<char>(std::toupper(static_cast<unsigned char>(line[0])));
+    
+            if (nextCommand == 'Q')
+            {
+                return false;
+            }
+    
+            if (nextCommand == 'R')
+            {
+                continue;
+            }
+    
+            int selectedIndex = 0;
+    
+            try
+            {
+                selectedIndex = std::stoi(line);
+            }
+            catch (...)
+            {
+                std::cout << "Invalid choice.\n";
+                continue;
+            }
+    
+            if (selectedIndex < 1 ||
+                selectedIndex > static_cast<int>(candidates.size()))
+            {
+                std::cout << "Invalid choice.\n";
+                continue;
+            }
+    
+            const RfSweepFrequencyCandidate& selected =
+                candidates[static_cast<std::size_t>(selectedIndex - 1)];
+    
+            m_config.frequency = selected.frequency;
+    
+            std::cout << "Setting base station RF frequency to "
+                      << m_config.frequency << "...\n";
+    
+            m_baseStation->changeFrequency(toMsclFrequency(m_config.frequency));
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    
+            if (selected.discoveries.empty())
+            {
+                std::cout << "RF signal was detected on RF " << m_config.frequency
+                          << ", but no nodeAddress was discovered.\n"
+                          << "You can now choose D to listen again on this RF, "
+                          << "N to manually enter nodeAddress, or Q to quit.\n";
+                continue;
+            }
+    
+            if (selected.discoveries.size() == 1)
+            {
+                mscl::NodeDiscoveries oneDiscovery;
+                oneDiscovery.push_back(selected.discoveries.front());
+    
+                selectDiscoveredNode(oneDiscovery);
+                return true;
+            }
+    
+            std::cout << "\nMultiple nodeAddress values were discovered on RF "
+                      << selected.frequency << ":\n";
+    
+            for (std::size_t i = 0; i < selected.discoveries.size(); ++i)
+            {
+                const mscl::NodeDiscovery& discovery = selected.discoveries[i];
+    
+                std::cout << "  " << (i + 1)
+                          << ") Node " << discovery.nodeAddress()
+                          << ", RSSI " << discovery.baseRssi()
+                          << ", Protocol "
+                          << commProtocolToString(discovery.communicationProtocol())
+                          << ", Serial " << discovery.serialNumber()
+                          << '\n';
+            }
+    
+            std::cout << "Choose a node number to use, or Q to quit: ";
+            std::cout.flush();
+    
+            std::getline(std::cin, line);
+    
+            if (line.empty() ||
+                std::toupper(static_cast<unsigned char>(line[0])) == 'Q')
+            {
+                return false;
+            }
+    
+            int nodeChoice = 0;
+    
+            try
+            {
+                nodeChoice = std::stoi(line);
+            }
+            catch (...)
+            {
+                std::cout << "Invalid choice.\n";
+                continue;
+            }
+    
+            if (nodeChoice < 1 ||
+                nodeChoice > static_cast<int>(selected.discoveries.size()))
+            {
+                std::cout << "Invalid choice.\n";
+                continue;
+            }
+    
+            mscl::NodeDiscoveries oneDiscovery;
+            oneDiscovery.push_back(
+                selected.discoveries[static_cast<std::size_t>(nodeChoice - 1)]);
+    
+            if (selectDiscoveredNode(oneDiscovery))
+            {
+                return true;
+            }
+            
+            continue;
+        }
+    }
+
+
+    mscl::WirelessTypes::Frequency
+    WirelessAccelerometerManager::toMsclFrequency(std::uint32_t frequency) const
+    {
+        if (frequency < static_cast<std::uint32_t>(mscl::WirelessTypes::freq_11) ||
+            frequency > static_cast<std::uint32_t>(mscl::WirelessTypes::freq_26))
+        {
+            throw std::runtime_error(
+                "Invalid RF frequency: " + std::to_string(frequency) +
+                ". Allowed values are 11 through 26.");
+        }
+    
+        return static_cast<mscl::WirelessTypes::Frequency>(frequency);
+    }
+    
+    void WirelessAccelerometerManager::ensureNodeReady()
+    {
+        if (!m_baseStation)
+        {
+            throw std::runtime_error("Base station is not connected.");
+        }
+    
+        if (m_config.frequency == 0)
+        {
+            throw std::runtime_error(
+                "RF frequency is not configured. Set frequency=11..26 in acceltool.ini.");
+        }
+    
+        std::cout << "Setting base station RF frequency to configured value "
+                  << m_config.frequency << "...\n";
+    
+        m_baseStation->changeFrequency(toMsclFrequency(m_config.frequency));
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    
+        if (m_config.nodeAddress > 0)
+        {
+            std::cout << "Using configured Node Address "
+                      << m_config.nodeAddress << ".\n";
+        
+            m_node = std::make_unique<mscl::WirelessNode>(
+                m_config.nodeAddress,
+                *m_baseStation);
+            m_node->readWriteRetries(3);
+        
+            try
+            {
+                ensureNodeReachable();
+                return;
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << "Configured nodeAddress/frequency did not respond: "
+                          << e.what() << "\n";
+        
+                if (!m_config.autoFindNodeAddress)
+                {
+                    throw;
+                }
+        
+                std::cout << "Scanning all RF frequencies 11..26 for node discovery...\n";
+        
+                m_node.reset();
+                m_config.nodeAddress = 0;
+        
+                if (scanFrequenciesForNodeDiscovery())
+                {
+                    ensureNodeReachable();
+                    return;
+                }
+        
+                throw;
+            }
+        }
+    
+        if (m_config.autoFindNodeAddress)
+        {
+            if (discoverNodeOnConfiguredFrequency())
+            {
+                ensureNodeReachable();
+                return;
+            }
+        
+            std::cout << "No nodeAddress was discovered on configured RF "
+                      << m_config.frequency
+                      << ". Scanning all RF frequencies 11..26...\n";
+        
+            if (scanFrequenciesForNodeDiscovery())
+            {
+                ensureNodeReachable();
+                return;
+            }
+        
+            throw std::runtime_error(
+                "Could not discover nodeAddress on the configured RF frequency or any RF frequency 11..26.");
+        }
+
+    
+        throw std::runtime_error(
+            "nodeAddress is 0/auto, but autoFindNodeAddress is false.");
+    }
+
+    
+    void WirelessAccelerometerManager::ensureNodeReachable()
+    {
+        if (!m_node)
+        {
+            throw std::runtime_error("Wireless node has not been created.");
+        }
+    
+        if (tryPingNode())
+        {
+            return;
+        }
+    
+        std::cout << "Initial node ping failed.\n";
+    
+        throw std::runtime_error(
+            "Failed to ping wireless node using the configured RF frequency and node address.");
+    }
+
+    
+    bool WirelessAccelerometerManager::scanForNodeFrequency()
+    {
+        if (!m_baseStation || !m_node)
+        {
+            return false;
+        }
+    
+        for (int frequency = static_cast<int>(mscl::WirelessTypes::freq_11);
+             frequency <= static_cast<int>(mscl::WirelessTypes::freq_26);
+             ++frequency)
+        {
+            const auto msclFrequency =
+                static_cast<mscl::WirelessTypes::Frequency>(frequency);
+    
+            try
+            {
+                std::cout << "  Trying RF frequency " << frequency << "...\n";
+    
+                m_baseStation->changeFrequency(msclFrequency);
+                std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    
+                if (tryPingNode())
+                {
+                    std::cout << "Found Node " << m_config.nodeAddress
+                              << " on RF frequency " << frequency << ".\n";
+                    m_config.frequency = static_cast<std::uint32_t>(frequency);
+                    return true;
+                }
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << "  RF frequency " << frequency
+                          << " scan attempt failed: " << e.what() << '\n';
+            }
+        }
+    
+        return false;
+    }
+    
+    bool WirelessAccelerometerManager::discoverNodeOnConfiguredFrequency()
+    {
+        if (m_config.frequency == 0)
+        {
+            return false;
+        }
+    
+        std::cout << "Discovering node on configured RF frequency "
+                  << m_config.frequency << "...\n";
+    
+        return collectNodeDiscoveryOnCurrentFrequency(10);
+    }
+    
+    bool WirelessAccelerometerManager::scanFrequenciesForNodeDiscovery()
+    {
+        if (!m_baseStation)
+        {
+            return false;
+        }
+    
+        std::cout << "Scanning RF frequencies for node discovery...\n";
+
+        const std::uint32_t originalFrequency = m_config.frequency;
+
+        for (int frequency = static_cast<int>(mscl::WirelessTypes::freq_11);
+             frequency <= static_cast<int>(mscl::WirelessTypes::freq_26);
+             ++frequency)
+        {
+            try
+            {
+                const auto msclFrequency =
+                    static_cast<mscl::WirelessTypes::Frequency>(frequency);
+    
+                std::cout << "  Discovering on RF frequency "
+                          << frequency << "...\n";
+    
+                m_baseStation->changeFrequency(msclFrequency);
+                m_config.frequency = static_cast<std::uint32_t>(frequency);
+    
+                std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    
+                if (collectNodeDiscoveryOnCurrentFrequency(10))
+                {
+                    return true;
+                }
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << "  RF frequency " << frequency
+                          << " discovery attempt failed: " << e.what() << '\n';
+            }
+        }
+
+        m_config.frequency = originalFrequency;
+        return false;
+    }
+
+    
+    bool WirelessAccelerometerManager::collectNodeDiscoveryOnCurrentFrequency(int listenSeconds)
+    {
+        if (!m_baseStation)
+        {
+            return false;
+        }
+    
+        try
+        {
+            (void)m_baseStation->getNodeDiscoveries();
+            (void)m_baseStation->getData(10);
+    
+            constexpr int kListenSeconds = 30;
+    
+            std::cout << "  Listening for any wireless packets on RF frequency "
+                      << m_config.frequency << " for "
+                      << listenSeconds << " seconds...\n";
+    
+            for (int elapsed = 0; elapsed < listenSeconds; ++elapsed)
+            {
+                const mscl::NodeDiscoveries discoveries =
+                    m_baseStation->getNodeDiscoveries();
+    
+                for (const mscl::NodeDiscovery& discovery : discoveries)
+                {
+                    if (static_cast<std::uint32_t>(discovery.frequency()) == m_config.frequency)
+                    {
+                        std::cout << "\n  NodeDiscovery received:\n"
+                                  << "    Node Address: " << discovery.nodeAddress()
+                                  << ", RF: " << static_cast<int>(discovery.frequency())
+                                  << ", RSSI: " << discovery.baseRssi()
+                                  << ", Protocol: " << commProtocolToString(discovery.communicationProtocol())
+                                  << ", Serial: " << discovery.serialNumber()
+                                  << '\n';
+    
+                        mscl::NodeDiscoveries selected;
+                        selected.push_back(discovery);
+                        if (selectDiscoveredNode(selected))
+                        {
+                            return true;
+                        }
+                        return true;
+                    }
+                }
+    
+                const mscl::DataSweeps sweeps = m_baseStation->getData(1000);
+    
+                for (const mscl::DataSweep& sweep : sweeps)
+                {
+                    const int nodeAddress = sweep.nodeAddress();
+    
+                    if (nodeAddress <= 0)
+                    {
+                        continue;
+                    }
+    
+                    std::cout << "\n  Wireless packet received:\n"
+                              << "    Node Address: " << nodeAddress
+                              << ", Sampling Type: " << static_cast<int>(sweep.samplingType())
+                              << ", Base RSSI: " << sweep.baseRssi()
+                              << ", Node RSSI: " << sweep.nodeRssi()
+                              << '\n';
+    
+                    std::cout << "\nUse Node " << nodeAddress
+                              << " on RF " << m_config.frequency
+                              << "? [Y/N]: ";
+                    std::cout.flush();
+    
+                    std::string line;
+                    std::getline(std::cin, line);
+    
+                    if (!line.empty() &&
+                        std::toupper(static_cast<unsigned char>(line[0])) == 'Y')
+                    {
+                        m_config.nodeAddress = nodeAddress;
+    
+                        m_node = std::make_unique<mscl::WirelessNode>(
+                            m_config.nodeAddress,
+                            *m_baseStation);
+                        m_node->readWriteRetries(3);
+    
+                        return true;
+                    }
+                }
+    
+                std::cout << "  Waiting for wireless packets... "
+                          << (elapsed + 1) << "/" << listenSeconds << "\r";
+                std::cout.flush();
+            }
+    
+            std::cout << "\n  No NodeDiscovery or wireless data packets received on RF frequency "
+                      << m_config.frequency << ".\n";
+            return false;
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "\n  Wireless packet listening failed: " << e.what() << '\n';
+            return false;
+        }
+    }
+
+    bool WirelessAccelerometerManager::confirmUseNode(
+        int nodeAddress,
+        std::uint32_t frequency) const
+    {
+        std::cout << "\nUse Node " << nodeAddress
+                  << " on RF " << frequency
+                  << "? [Y/N]: ";
+        std::cout.flush();
+    
+        std::string line;
+        std::getline(std::cin, line);
+    
+        return !line.empty() &&
+               std::toupper(static_cast<unsigned char>(line[0])) == 'Y';
+    }
+
+
+    bool WirelessAccelerometerManager::selectDiscoveredNode(
+        const mscl::NodeDiscoveries& discoveries)
+    {
+        if (discoveries.empty())
+        {
+            throw std::runtime_error("No node discoveries were provided.");
+        }
+    
+        std::cout << "Discovered wireless nodes:\n";
+    
+        for (const mscl::NodeDiscovery& discovery : discoveries)
+        {
+            std::cout << "  Node Address: " << discovery.nodeAddress()
+                      << ", RF: " << static_cast<int>(discovery.frequency())
+                      << ", RSSI: " << discovery.baseRssi()
+                      << ", Protocol: " << commProtocolToString(discovery.communicationProtocol())
+                      << ", Serial: " << discovery.serialNumber()
+                      << '\n';
+        }
+    
+        if (discoveries.size() > 1)
+        {
+            throw std::runtime_error(
+                "Multiple wireless nodes were discovered. Please set nodeAddress explicitly in acceltool.ini.");
+        }
+    
+        const mscl::NodeDiscovery& selected = discoveries.front();
+    
+        if (selected.communicationProtocol() != mscl::WirelessTypes::commProtocol_lxrsPlus)
+        {
+            throw std::runtime_error(
+                "Discovered node is not in LXRS+ mode. This application expects LXRS+.");
+        }
+    
+        const int selectedNodeAddress = selected.nodeAddress();
+        const std::uint32_t selectedFrequency =
+            static_cast<std::uint32_t>(selected.frequency());
+        
+        if (!confirmUseNode(selectedNodeAddress, selectedFrequency))
+        {
+            return false;
+        }
+        
+        m_config.nodeAddress = selectedNodeAddress;
+        m_config.frequency = selectedFrequency;
+        
+        std::cout << "Selected Node " << m_config.nodeAddress
+                  << " on RF frequency " << m_config.frequency << ".\n";
+        
+    
+        m_baseStation->changeFrequency(selected.frequency());
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    
+        m_node = std::make_unique<mscl::WirelessNode>(
+            m_config.nodeAddress,
+            *m_baseStation);
+        m_node->readWriteRetries(3);
+    
+        m_node->updateEepromCacheFromNodeDiscovery(selected);
+
+        return true;
+    }
+
 
     void WirelessAccelerometerManager::waitForNodeToStabilize(int maxAttempts, int sleepMs)
     {

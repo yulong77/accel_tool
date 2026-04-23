@@ -71,6 +71,7 @@ namespace acceltool
                     loadConfig(argc, argv);
                     initializeLogging();
                     connectManager();
+                    initializeDeviceAtStartup();
                     runCommandLoop();
 
                     logInfo("Program finished successfully.");
@@ -133,10 +134,77 @@ namespace acceltool
                 m_manager.connect(m_config);
             }
 
+            void initializeDeviceAtStartup()
+            {
+                try
+                {
+                    std::cout << "\nInitializing device using config file settings...\n";
+                    m_manager.initialize(false);
+                    syncAndSaveNodeSelectionFromManager();
+                    m_deviceReady = true;
+                    std::cout << "Device is initialized. Press S to start receiving data.\n";
+                    return;
+                }
+                catch (const mscl::Error& e)
+                {
+                    logError(std::string("MSCL ERROR during startup initialize: ") + e.what());
+                    if (!handleStartupInitializeFailure(e.what()))
+                    {
+                        throw;
+                    }
+                }
+                catch (const std::exception& e)
+                {
+                    logError(std::string("STD ERROR during startup initialize: ") + e.what());
+                    if (!handleStartupInitializeFailure(e.what()))
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            bool handleStartupInitializeFailure(const std::string& reason)
+            {
+                std::cout << "\nInitialize failed using config file settings.\n"
+                          << "Details: " << reason << "\n";
+            
+                if (!m_manager.recoverWithRfSweepPrompt())
+                {
+                    std::cout << "No usable node was selected.\n";
+                    return false;
+                }
+            
+                std::cout << "\nRetrying initialization with selected settings...\n";
+            
+                try
+                {
+                    m_manager.initialize(false);
+                    syncAndSaveNodeSelectionFromManager();
+                    m_deviceReady = true;
+                    std::cout << "Device is initialized. Press S to start receiving data.\n";
+                    return true;
+                }
+                catch (const mscl::Error& e)
+                {
+                    logError(std::string("MSCL ERROR after recovery: ") + e.what());
+                    std::cout << "Initialization still failed after recovery:\n"
+                              << e.what() << "\n";
+                    return false;
+                }
+                catch (const std::exception& e)
+                {
+                    logError(std::string("STD ERROR after recovery: ") + e.what());
+                    std::cout << "Initialization still failed after recovery:\n"
+                              << e.what() << "\n";
+                    return false;
+                }
+            }
+
+
             void printMenu() const
             {
                 std::cout << "\nAccelTool interactive mode\n"
-                          << "  I = Set to Idle + initialize device\n"
+                          << "  I = Set to Idle\n"
                           << "  S = Start receiving data\n"
                           << "  T = Stop receiving data\n"
                           << "  Q = Quit\n";
@@ -213,7 +281,7 @@ namespace acceltool
                 }
 
                 clearCompletedSessionState();
-                std::cout << "Device returned to idle. Run I again before starting another session.\n";
+                std::cout << "Device returned to idle. Press S to start another session.\n";
             }
 
             void handleInitializeCommand()
@@ -223,26 +291,26 @@ namespace acceltool
                     std::cout << "Sampling is currently running. Stop it first.\n";
                     return;
                 }
-
+            
                 try
                 {
-                    std::cout << "\nRunning manual Set to Idle + initialization...\n";
-                    m_manager.initialize(true);
+                    std::cout << "\nSetting device to idle...\n";
+                    m_manager.setToIdle();
                     m_deviceReady = true;
-                    std::cout << "\nDevice is ready. You can now press S to start receiving data.\n";
+                    std::cout << "Device is idle. You can press S to start receiving data.\n";
                 }
                 catch (const mscl::Error& e)
                 {
                     m_deviceReady = false;
-                    logError(std::string("MSCL ERROR during manual initialize: ") + e.what());
-                    std::cout << "\nInitialize failed. This is often recoverable; press I again to retry.\n"
+                    logError(std::string("MSCL ERROR during set to idle: ") + e.what());
+                    std::cout << "\nSet to Idle failed.\n"
                               << "MSCL details: " << e.what() << "\n";
                 }
                 catch (const std::exception& e)
                 {
                     m_deviceReady = false;
-                    logError(std::string("STD ERROR during manual initialize: ") + e.what());
-                    std::cout << "\nInitialize failed. Press I again to retry.\n"
+                    logError(std::string("STD ERROR during set to idle: ") + e.what());
+                    std::cout << "\nSet to Idle failed.\n"
                               << "Details: " << e.what() << "\n";
                 }
             }
@@ -251,7 +319,8 @@ namespace acceltool
             {
                 if (m_samplingHasRun)
                 {
-                    std::cout << "This run already wrote CSV output once. Restart the program for a fresh capture, or press I and then S if you want to overwrite the CSV files again.\n";
+                    std::cout << "This run already wrote CSV output once. Press S again to overwrite the CSV files, or restart the program for a fresh run.\n";
+
                 }
 
                 if (isSessionRunning())
@@ -262,12 +331,13 @@ namespace acceltool
 
                 if (!m_deviceReady)
                 {
-                    std::cout << "Device is not ready yet. Press I first until initialization succeeds.\n";
+                    std::cout << "Device is not ready. Press I to set it to idle, or restart the program to initialize again.\n";
                     return;
                 }
 
                 try
                 {
+                    syncAndSaveNodeSelectionFromManager();
                     m_session = std::make_unique<SamplingSession>(m_manager, m_config);
                     m_session->start();
                     std::cout << "\nSampling started. Press T when you want to stop receiving data.\n";
@@ -311,7 +381,7 @@ namespace acceltool
 
 
                 clearCompletedSessionState();
-                std::cout << "Device returned to idle. Press I again before the next start.\n";
+                std::cout << "Device returned to idle. Press S to start another session.\n";
             }
 
             void logFinalSamplingConclusions(
@@ -369,7 +439,7 @@ namespace acceltool
             {
                 m_session.reset();
                 m_samplingHasRun = true;
-                m_deviceReady = false;
+                m_deviceReady = true;
             }
 
         private:
@@ -379,6 +449,43 @@ namespace acceltool
             std::unique_ptr<SamplingSession> m_session;
             bool m_deviceReady = false;
             bool m_samplingHasRun = false;
+
+            void syncAndSaveNodeSelectionFromManager()
+            {
+                const AppConfig& current = m_manager.currentConfig();
+            
+                if (current.nodeAddress <= 0 || current.frequency == 0)
+                {
+                    return;
+                }
+            
+                m_config.nodeAddress = current.nodeAddress;
+                m_config.frequency = current.frequency;
+            
+                std::string saveError;
+                if (!saveNodeSelectionToConfigFile(
+                        m_configPath,
+                        m_config.nodeAddress,
+                        m_config.frequency,
+                        saveError))
+                {
+                    logError("Failed to save nodeAddress/frequency to config file: " + saveError);
+            
+                    std::cout << "Warning: failed to update "
+                              << m_configPath
+                              << " with current nodeAddress/frequency:\n"
+                              << saveError << "\n";
+                    return;
+                }
+            
+                std::cout << "Saved current nodeAddress="
+                          << m_config.nodeAddress
+                          << ", frequency="
+                          << m_config.frequency
+                          << " to "
+                          << m_configPath << ".\n";
+            }
+
         };
     }
 
