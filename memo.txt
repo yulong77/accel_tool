@@ -1,0 +1,141 @@
+C:\Users\Yulong\Workspace\projects\Kawasaki_Proj\AccelTool>build_debug\AccelTool.exe         
+[07:03:24] [INFO] AccelTool started.
+[07:03:24] [INFO] Loaded config file: config/acceltool.ini
+[07:03:24] [INFO] Using port: auto
+[07:03:24] [INFO] Using node address: 56384
+[07:03:24] [INFO] Using baudrate: 3000000
+[07:03:24] [INFO] Requested sample rate from ini: 4096
+[07:03:24] [INFO] Raw/result CSV will be written when sampling starts: accel_data.csv
+[07:03:24] [INFO] Display CSV will be written when sampling starts: display_data.csv
+Scanning for MicroStrain base station COM port...
+Trying candidate port COM3 (Lord Sensing Virtual COM Port (COM3))...
+Connected to base station on COM3.
+
+Initializing device using config file settings...
+Setting base station RF frequency to configured value 12...
+Using configured Node Address 56384.
+Setting Node to Idle...
+Successfully set Node to idle.
+Successfully pinged Node 56384
+Base Station RSSI: -44
+Node RSSI: -44
+Model Number: 63056000
+Serial: 6305-6000-121917
+Firmware: 12.56386.0
+
+Applying node configuration...
+Setting communication protocol to LXRS+...
+Requested sample rate: 4096 Hz
+Requested inactivity timeout: 7200 seconds
+Requested unlimited duration: true
+Requested active channels: CH1,CH2,CH3
+applyConfig attempt 1 / 3...
+applyConfig succeeded.
+Waiting for node to stabilize...
+Node is responsive again.
+Node configuration applied and node is stable.
+
+========== Node Configuration ==========
+Node Address           : 56384
+Model Number           : 63056000
+Serial                 : 6305-6000-121917
+Firmware               : 12.56386.0
+Communication Protocol : LXRS+
+Default Mode           : Idle
+Sampling Mode          : Sync
+Sample Rate            : 4096 Hz
+Inactivity Timeout     : 7200 sec
+Unlimited Duration     : true
+Num Sweeps             : 3686400
+Active Channel Count   : 3
+Active Channel Mask    : 0x7
+Active Channel Summary : CH1,CH2,CH3
+=========================================
+
+
+========== CONFIG APPLY REPORT ==========
+configureNode                  : true
+verifyConfig passed            : true
+applyConfig completed          : true
+
+Requested / Applied / Reported
+Requested sample rate          : 4096 Hz
+Applied sample rate target     : 4096 Hz
+Device reported sample rate    : 4096 Hz
+
+Requested inactivity timeout   : 7200 sec
+Device reported timeout        : 7200 sec
+
+Requested unlimited duration   : true
+Device reported unlimited dur. : true
+
+Requested protocol             : LXRS+
+Device reported protocol       : LXRS+
+
+Before -> After summary
+Sample Rate                    : 2048 Hz -> 4096 Hz
+Sampling Mode                  : Sync -> Sync
+Inactivity Timeout             : 7200 sec -> 7200 sec
+Unlimited Duration             : true -> true
+Communication Protocol         : LXRS+ -> LXRS+
+=========================================
+
+Saved current nodeAddress=56384, frequency=12 to config/acceltool.ini.
+Device is initialized. Press S to start receiving data.
+
+AccelTool interactive mode
+  I = Set to Idle
+  S = Start receiving data
+  T = Stop receiving data
+  Q = Quit
+
+
+Enter command [I/S/T/Q]: i
+
+Setting device to idle...
+Setting Node to Idle...
+Successfully set Node to idle.
+Device is idle. You can press S to start receiving data.
+
+
+Enter command [I/S/T/Q]: s
+Saved current nodeAddress=56384, frequency=12 to config/acceltool.ini.
+
+Sampling started. Press T when you want to stop receiving data.
+
+
+Enter command [I/S/T/Q]: Waiting for node to stabilize...
+Node is responsive again.
+Adding Node 56384 to sync network...
+Network info:
+  Network OK: FALSE
+  Percent Bandwidth: 200%
+  Lossless Enabled: TRUE
+Applying network configuration...
+
+[07:03:44] [ERROR] Sampling session failed: Network status is not OK. Configuration cannot be applied.
+
+Sampling stopped with an error:
+Network status is not OK. Configuration cannot be applied.
+Device returned to idle. Press S to start another session.
+
+
+现在回到把UI 做成ring buffer的问题上。
+MSCL Acquisition
+      |
+      v
+Lossless Raw Queue / Buffer
+      |
+      v
+Processing
+      |
+      +-----------------> Lossless Writer Queue -> accel_data.csv
+      |
+      v
+DisplayBucket Stream / Ring Buffer
+      |                    |
+      v                    v
+UI                 Alarm/Monitor
+      |
+      v
+display_data.csv 或 UI历史记录

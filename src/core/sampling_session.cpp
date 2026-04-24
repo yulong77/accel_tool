@@ -548,8 +548,6 @@ namespace acceltool
 
             try
             {
-                std::size_t nextConsolePrintAt = m_config.displayAggregationSamples;
-
                 WritePayload payload;
                 while (writeQueue.waitPop(payload))
                 {
@@ -565,23 +563,22 @@ namespace acceltool
                     {
                         displayWriter.writeRow(bucket);
                         ++stats.displayBucketsWritten;
-                    }
-
-                    if (m_config.printToConsole && !payload.processedSamples.empty())
-                    {
-                        while (stats.samplesWrittenToCsv.load() >= nextConsolePrintAt)
+                    
+                        if (m_config.printToConsole)
                         {
-                            const ProcessedSample& s = payload.processedSamples.back();
                             logInfo(
-                                "sample=" + std::to_string(s.sampleIndex) +
-                                ", x=" + std::to_string(s.x) +
-                                ", y=" + std::to_string(s.y) +
-                                ", z=" + std::to_string(s.z) +
-                                ", magXY=" + std::to_string(s.magnitudeXY) +
-                                ", magXYZ=" + std::to_string(s.magnitudeXYZ) +
-                                ", spec=" + std::to_string(s.appliedSpec) +
-                                ", exceedsSpec=" + std::string(s.exceedsSpec ? "1" : "0"));
-                            nextConsolePrintAt += m_config.displayAggregationSamples;
+                                "bucket=" + std::to_string(bucket.bucketIndex) +
+                                // ", start_sample=" + std::to_string(bucket.startSampleIndex) +
+                                // ", end_sample=" + std::to_string(bucket.endSampleIndex) +
+                                ", sample_count=" + std::to_string(bucket.sampleCount) +
+                                ", peak_x=" + std::to_string(bucket.peakX) +
+                                ", peak_y=" + std::to_string(bucket.peakY) +
+                                ", peak_z=" + std::to_string(bucket.peakZ) +
+                                ", max_magXY=" + std::to_string(bucket.maxMagnitudeXY) +
+                                ", max_magXYZ=" + std::to_string(bucket.maxMagnitudeXYZ) +
+                                ", max_normLatG=" + std::to_string(bucket.maxNormLatG) +
+                                ", applied_spec=" + std::to_string(bucket.appliedSpec) +
+                                ", exceeds_spec=" + std::string(bucket.exceedsSpec ? "1" : "0"));
                         }
                     }
                 }

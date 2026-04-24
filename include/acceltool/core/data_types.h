@@ -85,6 +85,9 @@ namespace acceltool
         double maxMagnitudeXY = 0.0;
         double maxMagnitudeXYZ = 0.0;
         double maxNormLatG = 0.0;
+
+        double appliedSpec = 0.0;
+        bool exceedsSpec = false;
     };
 
 

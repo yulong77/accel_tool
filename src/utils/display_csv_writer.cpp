@@ -31,7 +31,9 @@ namespace acceltool
                  "peak_z,"
                  "max_magnitude_xy,"
                  "max_magnitude_xyz,"
-                 "max_norm_Lat_G\n";
+                 "max_norm_Lat_G,"
+                 "applied_spec,"
+                 "exceeds_spec\n";
     }
 
     void DisplayCsvWriter::writeRow(const DisplayBucket& bucket)
@@ -48,7 +50,9 @@ namespace acceltool
             << bucket.peakZ << ','
             << bucket.maxMagnitudeXY << ','
             << bucket.maxMagnitudeXYZ << ','
-            << bucket.maxNormLatG << '\n';
+            << bucket.maxNormLatG << ','
+            << bucket.appliedSpec << ','
+            << (bucket.exceedsSpec ? 1 : 0) << '\n';
     }
 
 

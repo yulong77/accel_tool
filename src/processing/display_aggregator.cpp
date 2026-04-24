@@ -34,6 +34,10 @@ namespace acceltool
             m_current.maxMagnitudeXY = sample.magnitudeXY;
             m_current.maxMagnitudeXYZ = sample.magnitudeXYZ;
             m_current.maxNormLatG = sample.normLatG;
+
+            m_current.appliedSpec = sample.appliedSpec;
+            m_current.exceedsSpec = sample.exceedsSpec;
+
             m_hasOpenBucket = true;
         }
         else
@@ -60,6 +64,8 @@ namespace acceltool
             m_current.maxMagnitudeXY = std::max(m_current.maxMagnitudeXY, sample.magnitudeXY);
             m_current.maxMagnitudeXYZ = std::max(m_current.maxMagnitudeXYZ, sample.magnitudeXYZ);
             m_current.maxNormLatG = std::max(m_current.maxNormLatG, sample.normLatG);
+            
+            m_current.exceedsSpec = m_current.exceedsSpec || sample.exceedsSpec;
         }
     
         if (m_current.sampleCount >= m_bucketSampleCount)
