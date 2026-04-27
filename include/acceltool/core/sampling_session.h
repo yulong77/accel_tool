@@ -51,6 +51,8 @@ namespace acceltool
         std::atomic<std::size_t> totalMissingTicks{0};
         std::atomic<std::size_t> samplesWithTimestampGap{0};
 
+        bool hasExtrema = false;
+        
         double maxPeakX = 0.0;
         double maxPeakY = 0.0;
         double maxPeakZ = 0.0;
@@ -168,7 +170,6 @@ namespace acceltool
 
         SampleRateStabilitySummary m_stabilitySummary{};
         SamplingDiagnosticsSummary m_diagnosticsSummary{};
-
 
     };
 }

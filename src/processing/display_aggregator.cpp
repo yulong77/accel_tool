@@ -63,7 +63,10 @@ namespace acceltool
     
             m_current.maxMagnitudeXY = std::max(m_current.maxMagnitudeXY, sample.magnitudeXY);
             m_current.maxMagnitudeXYZ = std::max(m_current.maxMagnitudeXYZ, sample.magnitudeXYZ);
-            m_current.maxNormLatG = std::max(m_current.maxNormLatG, sample.normLatG);
+            if (std::abs(sample.normLatG) > std::abs(m_current.maxNormLatG))
+            {
+                m_current.maxNormLatG = sample.normLatG;
+            }
             
             m_current.exceedsSpec = m_current.exceedsSpec || sample.exceedsSpec;
         }

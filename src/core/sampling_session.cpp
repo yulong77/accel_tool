@@ -457,7 +457,6 @@ namespace acceltool
 
                         stats.lastDeviceTimestampUnixNs = processed.deviceTimestampUnixNs;
 
-
                         if (processed.tickGapDetected)
                         {
                             ++stats.samplesWithTickGap;
@@ -469,34 +468,47 @@ namespace acceltool
                             ++stats.samplesWithTimestampGap;
                         }
 
-                        if (processed.x > stats.maxPeakX)
+                        if (!stats.hasExtrema)
                         {
                             stats.maxPeakX = processed.x;
-                        }
-                        
-                        if (processed.y > stats.maxPeakY)
-                        {
                             stats.maxPeakY = processed.y;
-                        }
-                        
-                        if (processed.z > stats.maxPeakZ)
-                        {
                             stats.maxPeakZ = processed.z;
-                        }
-                        
-                        if (processed.magnitudeXY > stats.maxMagnitudeXY)
-                        {
                             stats.maxMagnitudeXY = processed.magnitudeXY;
-                        }
-                        
-                        if (processed.magnitudeXYZ > stats.maxMagnitudeXYZ)
-                        {
                             stats.maxMagnitudeXYZ = processed.magnitudeXYZ;
-                        }
-                        
-                        if (processed.normLatG > stats.maxNormLatG)
-                        {
                             stats.maxNormLatG = processed.normLatG;
+                            stats.hasExtrema = true;
+                        }
+                        else
+                        {
+                            if (std::abs(processed.x) > std::abs(stats.maxPeakX))
+                            {
+                                stats.maxPeakX = processed.x;
+                            }
+
+                            if (std::abs(processed.y) > std::abs(stats.maxPeakY))
+                            {
+                                stats.maxPeakY = processed.y;
+                            }
+
+                            if (std::abs(processed.z) > std::abs(stats.maxPeakZ))
+                            {
+                                stats.maxPeakZ = processed.z;
+                            }
+
+                            if (processed.magnitudeXY > stats.maxMagnitudeXY)
+                            {
+                                stats.maxMagnitudeXY = processed.magnitudeXY;
+                            }
+
+                            if (processed.magnitudeXYZ > stats.maxMagnitudeXYZ)
+                            {
+                                stats.maxMagnitudeXYZ = processed.magnitudeXYZ;
+                            }
+
+                            if (std::abs(processed.normLatG) > std::abs(stats.maxNormLatG))
+                            {
+                                stats.maxNormLatG = processed.normLatG;
+                            }
                         }
 
                         auto bucketOpt = aggregator.consume(processed);

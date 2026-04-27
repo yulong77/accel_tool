@@ -223,7 +223,18 @@ Maximum `magnitude_xy` value in the bucket.
 Maximum `magnitude_xyz` value in the bucket.
 
 #### `max_norm_Lat_G`
-Maximum `norm_Lat_G` value in the bucket.
+Signed `norm_Lat_G` value with the largest absolute value in the bucket.
+The original sign of that sample is preserved.
+
+### Final conclusion peak values
+
+The runtime final conclusion fields `maxPeakX`, `maxPeakY`, and `maxPeakZ`
+use the same signed-peak convention as `display_data.csv`:
+`maxNormLatG` follows the same signed-peak convention: it chooses the `norm_Lat_G`
+value with the largest absolute value and preserves its original sign.
+
+- choose the sample value with the largest absolute axis value;
+- preserve the original sign of that sample.
 
 ## Notes On Timing And Loss Detection
 
