@@ -3,6 +3,7 @@ build_release/
 out/
 bin/
 docs/
+TCP_test/
 *.obj
 *.pdb
 *.ilk
@@ -20,4 +21,3 @@ Thumbs.db
 accel_data.csv
 display_data.csv
 acceltool.log
-note.txt
